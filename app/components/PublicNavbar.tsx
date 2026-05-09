@@ -25,8 +25,8 @@ export default function PublicNavbar() {
     <header className="sticky top-0 z-50 border-b border-white/10 bg-event-bg/80 backdrop-blur-xl">
       <nav className="event-container flex h-[76px] items-center justify-between">
         <Link href="/" className="flex items-center gap-3" onClick={() => setIsOpen(false)}>
-          <span className="grid size-10 place-items-center rounded-2xl bg-gradient-to-br from-event-primary-light to-event-secondary text-xl font-black text-white shadow-lg shadow-event-primary/30">
-            E
+          <span className="grid size-10 place-items-center">
+            <img src="/logo-event-tracker.png" alt="" />
           </span>
           <span className="text-xl font-bold tracking-tight text-event-text">
             Event<span className="text-event-primary-light">Sync</span>
