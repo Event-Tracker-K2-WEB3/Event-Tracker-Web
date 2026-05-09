@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { Calendar } from "lucide-react";
+
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import MobileNavMenu from "./MobileNavMenu";
@@ -53,12 +55,13 @@ export default function PublicNavbar() {
           ))}
         </div>
 
-        <div className="hidden items-center gap-3 lg:flex">
+        <div>
           <Link
             href="/events/demo-event/planning"
-            className="rounded-xl bg-gradient-to-r from-event-primary to-event-secondary px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-event-primary/25 transition hover:scale-[1.02]"
+            className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-event-primary to-event-secondary px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-event-primary/25 transition hover:scale-[1.02]"
           >
-            Voir le programme
+            <Calendar size={16} />
+            <span>Voir le programme</span>
           </Link>
         </div>
 
