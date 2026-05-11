@@ -11,8 +11,8 @@ interface SearchBarProps {
 
 const SearchBar = ({ onSearch }: SearchBarProps) => {
     return (
-        <InputGroup className="dark max-w-xs border-border focus-within:border-event-primary focus-within:ring-1 focus-within:ring-event-primary/50 transition-all">
-            <InputGroupInput placeholder="Rechercher un événement, un sujet..." />
+        <InputGroup className="dark bg-background max-w-md rounded-md overflow-hidden border-border focus-within:border-event-primary focus-within:ring-1 focus-within:ring-event-primary/50 transition-all">
+            <InputGroupInput placeholder="Rechercher un événement, un sujet, une ville..." />
             <InputGroupAddon>
                 <Search />
             </InputGroupAddon>

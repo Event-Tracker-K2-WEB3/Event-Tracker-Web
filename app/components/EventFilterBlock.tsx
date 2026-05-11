@@ -7,7 +7,7 @@ const EventFilterBlock = () => {
 
     return (
         <section
-            className="bg-event-bg w-full px-12 py-4 mb-6 border-b border-border/50">
+            className="dark bg-event-bg w-full px-12 py-4">
             <div className="">
                 <SearchBar onSearch={handleSearch} />
             </div>

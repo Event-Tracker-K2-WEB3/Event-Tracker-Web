@@ -1,16 +1,18 @@
+import { EventExplorer } from '../components/EventExplorer';
 import EventFilterBlock from '../components/EventFilterBlock';
 import { eventService } from '../services/eventService';
 import { EventList } from './EventList';
 
 export default async function EventsPage() {
+
   const events = await eventService.getAllEvents();
 
   return (
-    <main className="min-h-[calc(100vh-76px)]">
+    <main className="min-h-[calc(100vh-76px)] flex flex-col">
       
       {/*hero page*/}
       <div
-        className="bg-cover bg-center bg-no-repeat"
+        className="bg-cover bg-center bg-no-repeat shrink-0"
         style={{ backgroundImage: "url('/tech-summit-conference-crowd-stage-purple-hero.png')" }}
       >
         <div className="px-12 py-12">
@@ -30,7 +32,7 @@ export default async function EventsPage() {
 
       <EventFilterBlock/>
 
-
+      <EventExplorer/>
 
     </main >
   );
