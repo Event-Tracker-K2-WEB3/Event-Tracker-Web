@@ -1,6 +1,6 @@
 import SearchBar  from "./SearchBar"
 import { DateFilters } from "./DateFilters"
-import { MapPin, Calendar, Layers, FilterX } from "lucide-react"
+import { MapPin, Calendar } from "lucide-react"
 
 export const FilterSidebar = () => {
 

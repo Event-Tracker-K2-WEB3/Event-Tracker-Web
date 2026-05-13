@@ -9,7 +9,7 @@ export default async function EventsPage() {
 
   return (
     <main className="min-h-[calc(100vh-76px)] flex flex-col">
-      
+
       {/*hero page*/}
       <div
         className="bg-cover bg-center bg-no-repeat shrink-0"
@@ -30,9 +30,11 @@ export default async function EventsPage() {
 
       {/*filter*/}
 
-      <EventFilterBlock/>
+      <EventFilterBlock />
 
-      <EventExplorer/>
+
+      <EventExplorer events={events} />
+
 
     </main >
   );
