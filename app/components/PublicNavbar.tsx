@@ -10,7 +10,7 @@ import MobileNavMenu from "./MobileNavMenu";
 const navLinks = [
   { label: "Accueil", href: "/" },
   { label: "Événements", href: "/events" },
-  { label: "Intervenants", href: "/speakers/demo-speaker" },
+  { label: "Intervenants", href: "/speakers" },
   { label: "À propos", href: "/about" },
 ];
 
