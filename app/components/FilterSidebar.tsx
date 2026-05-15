@@ -1,3 +1,5 @@
+"use client"
+
 import SearchBar  from "./SearchBar"
 import { DateFilters } from "./DateFilters"
 import { MapPin, Calendar } from "lucide-react"
@@ -29,14 +31,14 @@ export const FilterSidebar = () => {
 
                 <div className="h-px bg-gradient-to-r from-transparent via-event-border/50 to-transparent" />
 
-                {/* SECTION : LIEU */}
+                {/* SECTION : LOCATION */}
                 <section className="space-y-4">
                     <div className="flex items-center gap-2 px-1">
                         <MapPin className="text-event-primary" size={18} />
                         <h3 className="font-semibold text-sm tracking-wider">Lieu</h3>
                     </div>
                     <SearchBar onSearch={handleLocationSearch} />
-                    {/* Tu pourras ajouter ici une liste de "Villes populaires" plus tard */}
+                
                 </section>
 
             </div>

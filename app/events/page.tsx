@@ -3,9 +3,11 @@ import EventFilterBlock from '../components/EventFilterBlock';
 import { eventService } from '../services/eventService';
 import { EventList } from './EventList';
 
-export default async function EventsPage() {
+export default async function EventsPage({searchParams}: { searchParams: { page?: string } }) {
 
-  const events = await eventService.getAllEvents();
+  const params = await searchParams;
+  const currentPage = params.page ? parseInt(params.page) : 1;
+  const events = await eventService.getAllEvents(currentPage);
 
   return (
     <main className="min-h-[calc(100vh-76px)] flex flex-col">
@@ -33,7 +35,7 @@ export default async function EventsPage() {
       <EventFilterBlock />
 
 
-      <EventExplorer events={events} />
+      <EventExplorer data={events} currentPage={currentPage}/>
 
 
     </main >
