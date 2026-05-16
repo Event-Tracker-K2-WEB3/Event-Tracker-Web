@@ -49,7 +49,7 @@ const Pagination = ({ currentPage, totalPages, isFirstPage, isLastPage }: Pagina
   };
 
   return (
-    <div className="border-2 border-red-600 flex items-center gap-1 bg-[#0a0a0f] p-3 rounded-lg w-fit">
+    <div className="dark event-glass border-2 border-red-600 flex items-center gap-1 p-1 rounded-lg w-fit">
       {/* Bouton Précédent */}
       <button
         disabled={isFirstPage}
@@ -66,7 +66,7 @@ const Pagination = ({ currentPage, totalPages, isFirstPage, isLastPage }: Pagina
         <button
           key={index}
           disabled={page === "..."}
-          className={`w-8 h-8 flex items-center justify-center rounded text-sm font-medium transition-all ${page === currentPage
+          className={`w-8 h-8 flex items-center justify-center rounded-md text-sm font-medium transition-all ${page === currentPage
             ? "bg-gradient-to-br from-purple-600 to-purple-500 text-white shadow-lg shadow-purple-500/30"
             : page === "..."
               ? "text-gray-500 cursor-default"

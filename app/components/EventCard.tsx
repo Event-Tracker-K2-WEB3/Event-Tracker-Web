@@ -44,7 +44,7 @@ export function EventCard({ event }: { event: Event }) {
   return (
     <Link
       href={`/events/${event.id}`}
-      className="bg-event-card group overflow-hidden rounded-xl border border-event-border transition hover:-translate-y-0.5 hover:border-event-primary/50"
+      className="event-glass group overflow-hidden rounded-xl border border-event-border transition hover:-translate-y-0.5 hover:border-event-primary/50"
     >
       {/* Section haut avec badge - HAUTEUR RÉDUITE */}
       <div className="relative h-24 bg-gradient-to-br from-event-primary/30 via-event-primary/10 to-event-secondary/20">

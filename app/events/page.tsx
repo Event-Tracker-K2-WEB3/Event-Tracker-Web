@@ -10,7 +10,7 @@ export default async function EventsPage({searchParams}: { searchParams: { page?
   const events = await eventService.getAllEvents(currentPage);
 
   return (
-    <main className="min-h-[calc(100vh-76px)] flex flex-col">
+    <main className="h-auto lg:h-[calc(100vh-76px)] flex flex-col">
 
       {/*hero page*/}
       <div
