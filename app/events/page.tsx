@@ -1,7 +1,6 @@
 import { EventExplorer } from '../components/EventExplorer';
 import EventFilterBlock from '../components/EventFilterBlock';
 import { eventService } from '../services/eventService';
-import { EventList } from './EventList';
 
 export default async function EventsPage({searchParams}: { searchParams: { page?: string } }) {
 

@@ -19,8 +19,6 @@ export const FilterSidebar = () => {
 
             <div className="flex flex-col gap-8 p-4 event-glass h-full border-event-border/40">
 
-
-                {/* SECTION : DATE */}
                 <section className="space-y-4">
                     <div className="flex items-center gap-2 px-1">
                         <Calendar className="text-event-primary" size={18} />
@@ -31,7 +29,6 @@ export const FilterSidebar = () => {
 
                 <div className="h-px bg-gradient-to-r from-transparent via-event-border/50 to-transparent" />
 
-                {/* SECTION : LOCATION */}
                 <section className="space-y-4">
                     <div className="flex items-center gap-2 px-1">
                         <MapPin className="text-event-primary" size={18} />

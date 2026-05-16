@@ -46,10 +46,9 @@ export function EventCard({ event }: { event: Event }) {
       href={`/events/${event.id}`}
       className="event-glass group overflow-hidden rounded-xl border border-event-border transition hover:-translate-y-0.5 hover:border-event-primary/50"
     >
-      {/* Section haut avec badge - HAUTEUR RÉDUITE */}
+    
       <div className="relative h-24 bg-gradient-to-br from-event-primary/30 via-event-primary/10 to-event-secondary/20">
 
-        {/* Badge date - plus petit */}
         <div className="absolute left-3 top-3 rounded-lg border border-event-accent/60 bg-event-bg/60 px-2 py-1.5 text-center backdrop-blur-md">
           <p className="text-lg font-black leading-none text-event-text">
             {formatDay(event.startDate)}
@@ -59,7 +58,6 @@ export function EventCard({ event }: { event: Event }) {
           </p>
         </div>
 
-        {/* Badge LIVE - plus petit */}
         {isLive && (
           <div className="absolute right-3 top-3 rounded-full bg-event-live px-2 py-0.5 flex items-center gap-1 shadow-lg shadow-event-live/30">
             <span className="relative flex h-1.5 w-1.5">
@@ -71,19 +69,16 @@ export function EventCard({ event }: { event: Event }) {
         )}
       </div>
 
-      {/* Corps de la carte - PADDING RÉDUIT */}
       <div className="p-3 space-y-1.5">
         {/* Titre - plus petit */}
         <h3 className="text-sm font-bold text-event-text group-hover:text-event-primary transition-colors line-clamp-1">
           {event.title}
         </h3>
 
-        {/* Description - plus petite */}
         <p className="text-xs text-event-muted leading-relaxed line-clamp-2">
           {event.description}
         </p>
 
-        {/* Informations : Lieu et Date - plus compact */}
         <div className="space-y-1 pt-1">
           <div className="flex items-center gap-1.5 text-[11px] text-event-muted">
             <MapPin className="text-event-primary" size={12} />

@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 interface PaginationProps {
   currentPage: number;
@@ -10,24 +11,33 @@ interface PaginationProps {
 }
 
 const Pagination = ({ currentPage, totalPages, isFirstPage, isLastPage }: PaginationProps) => {
+
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const handlePageChange = (pageNumber: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", pageNumber.toString());
+
+    router.push(`?${params.toString()}`);
+  };
+
   const getPageNumbers = () => {
     const pages = [];
 
     if (totalPages <= 6) {
-      // Si moins de 6 pages, afficher toutes les pages
+
       for (let i = 1; i <= totalPages; i++) {
         pages.push(i);
       }
 
     } else {
-      // Toujours afficher la première page
       pages.push(1);
 
       if (currentPage > 3) {
         pages.push("...");
       }
 
-      // Pages autour de la page courante
       const start = Math.max(2, currentPage - 1);
       const end = Math.min(totalPages - 1, currentPage + 1);
 
@@ -41,7 +51,6 @@ const Pagination = ({ currentPage, totalPages, isFirstPage, isLastPage }: Pagina
         pages.push("...");
       }
 
-      // Toujours afficher la dernière page
       pages.push(totalPages);
     }
 
@@ -50,8 +59,9 @@ const Pagination = ({ currentPage, totalPages, isFirstPage, isLastPage }: Pagina
 
   return (
     <div className="dark event-glass border-2 border-red-600 flex items-center gap-1 p-1 rounded-lg w-fit">
-      {/* Bouton Précédent */}
+      
       <button
+        onClick={() => handlePageChange(currentPage - 1)}
         disabled={isFirstPage}
         className={`w-8 h-8 flex items-center justify-center rounded transition-colors ${isFirstPage
           ? "text-gray-600 cursor-not-allowed"
@@ -61,10 +71,10 @@ const Pagination = ({ currentPage, totalPages, isFirstPage, isLastPage }: Pagina
         <ChevronLeft size={18} />
       </button>
 
-      {/* Numéros de page */}
       {getPageNumbers().map((page, index) => (
         <button
           key={index}
+          onClick={() => typeof page === "number" && handlePageChange(page)}
           disabled={page === "..."}
           className={`w-8 h-8 flex items-center justify-center rounded-md text-sm font-medium transition-all ${page === currentPage
             ? "bg-gradient-to-br from-purple-600 to-purple-500 text-white shadow-lg shadow-purple-500/30"
@@ -77,8 +87,8 @@ const Pagination = ({ currentPage, totalPages, isFirstPage, isLastPage }: Pagina
         </button>
       ))}
 
-      {/* Bouton Suivant */}
       <button
+        onClick={() => handlePageChange(currentPage + 1)}
         disabled={isLastPage}
         className={`w-8 h-8 flex items-center justify-center rounded transition-colors ${isLastPage
           ? "text-gray-600 cursor-not-allowed"
