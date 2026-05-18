@@ -1,119 +1,54 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { eventService, type Event } from "./services/eventService";
 
-type EventCard = {
-  id: number;
-  day: string;
-  month: string;
-  title: string;
-  description: string;
-  location: string;
-  date: string;
-  live?: boolean;
-  background: string;
-};
 
-const events: EventCard[] = [
-  {
-    id: 1,
-    day: "12",
-    month: "JUIN",
-    title: "Tech Summit Paris 2025",
-    description: "Le rendez-vous des leaders tech et de l’innovation.",
-    location: "Paris, France",
-    date: "12 - 14 Juin 2025",
-    live: true,
-    background:
-      "/home-ger.png"
-  },
-  {
-    id: 2,
-    day: "22",
-    month: "AOÛT",
-    title: "UX Design Conference",
-    description:
-      "3 jours pour explorer le futur du design et de l’expérience utilisateur.",
-    location: "Lyon, France",
-    date: "22 - 24 Août 2025",
-    background:
-      "linear-gradient(135deg, rgba(164, 91, 40, 0.92), rgba(20, 13, 18, 0.98)), radial-gradient(circle at 70% 25%, rgba(255,197,129,0.34), transparent 38%)",
-  },
-  {
-    id: 3,
-    day: "10",
-    month: "OCT.",
-    title: "AI & Data Workshop",
-    description:
-      "Ateliers pratiques autour de l’intelligence artificielle et des données.",
-    location: "Bordeaux, France",
-    date: "10 - 11 Oct. 2025",
-    background:
-      "linear-gradient(135deg, rgba(14, 83, 185, 0.94), rgba(5, 17, 48, 0.98)), radial-gradient(circle at 70% 28%, rgba(87,180,255,0.38), transparent 38%)",
-  },
-  {
-    id: 4,
-    day: "05",
-    month: "NOV.",
-    title: "Future of Work Summit",
-    description: "Repenser le travail à l’ère du numérique.",
-    location: "Lille, France",
-    date: "05 - 06 Nov. 2025",
-    background:
-      "linear-gradient(135deg, rgba(159, 42, 226, 0.94), rgba(22, 9, 42, 0.98)), radial-gradient(circle at 72% 22%, rgba(255,122,244,0.34), transparent 38%)",
-  },
-  {
-    id: 5,
-    day: "18",
-    month: "NOV.",
-    title: "Cloud & DevOps Days",
-    description:
-      "Infrastructure, automatisation et plateformes cloud modernes.",
-    location: "Marseille, France",
-    date: "18 - 20 Nov. 2025",
-    background:
-      "linear-gradient(135deg, rgba(45,102,255,0.92), rgba(11,18,58,0.98)), radial-gradient(circle at 28% 20%, rgba(165,205,255,0.38), transparent 36%)",
-  },
-  {
-    id: 6,
-    day: "03",
-    month: "DÉC.",
-    title: "Cyber Security Forum",
-    description:
-      "Protection des systèmes, des données et des infrastructures critiques.",
-    location: "Toulouse, France",
-    date: "03 - 04 Déc. 2025",
-    background:
-      "linear-gradient(135deg, rgba(102,25,190,0.96), rgba(8,10,28,0.99)), radial-gradient(circle at 58% 30%, rgba(205,110,255,0.34), transparent 36%)",
-  },
-  {
-    id: 7,
-    day: "11",
-    month: "JAN.",
-    title: "Startup Growth Meetup",
-    description:
-      "Stratégies, financement et retours d’expérience entrepreneuriaux.",
-    location: "Nantes, France",
-    date: "11 Jan. 2026",
-    background:
-      "linear-gradient(135deg, rgba(213,62,130,0.88), rgba(32,10,35,0.98)), radial-gradient(circle at 45% 24%, rgba(255,166,215,0.30), transparent 35%)",
-  },
-  {
-    id: 8,
-    day: "24",
-    month: "FÉV.",
-    title: "Digital Product Expo",
-    description:
-      "Produits digitaux, innovation et expériences utilisateur ambitieuses.",
-    location: "Nice, France",
-    date: "24 - 25 Fév. 2026",
-    background:
-      "linear-gradient(135deg, rgba(49,84,207,0.92), rgba(13,15,44,0.98)), radial-gradient(circle at 70% 35%, rgba(120,180,255,0.33), transparent 36%)",
-  },
-];
+function formatDay(dateString: string): string {
+  return new Date(dateString).getDate().toString().padStart(2, "0");
+}
+
+function formatMonth(dateString: string): string {
+  return new Date(dateString)
+    .toLocaleDateString("fr-FR", { month: "short" })
+    .replace(".", "")
+    .toUpperCase();
+}
+
+function formatEventDate(startDate: string, endDate: string): string {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  const startLabel = start.toLocaleDateString("fr-FR", {
+    day: "2-digit",
+    month: "short",
+  });
+
+  const endLabel = end.toLocaleDateString("fr-FR", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+
+  return `${startLabel} - ${endLabel}`;
+}
+
+function isEventLive(startDate: string, endDate: string): boolean {
+  const now = new Date();
+  return new Date(startDate) <= now && new Date(endDate) >= now;
+}
 
 export default function Page() {
   const carouselRef = useRef<HTMLDivElement>(null);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [isLoadingEvents, setIsLoadingEvents] = useState(true);
+  const [eventsError, setEventsError] = useState<string | null>(null);
+
+  const upcomingEvents = useMemo(() => {
+    return [...events].sort(
+      (a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+    );
+  }, [events]);
 
   const scrollCarousel = (direction: "left" | "right") => {
     carouselRef.current?.scrollBy({
@@ -121,6 +56,25 @@ export default function Page() {
       behavior: "smooth",
     });
   };
+
+  useEffect(() => {
+    const loadEvents = async () => {
+      try {
+        setIsLoadingEvents(true);
+        setEventsError(null);
+
+        const data = await eventService.getAllEvents();
+        setEvents(data);
+      } catch (error) {
+        console.error("Erreur lors du chargement des événements :", error);
+        setEventsError("Impossible de charger les événements.");
+      } finally {
+        setIsLoadingEvents(false);
+      }
+    };
+
+    loadEvents();
+  }, []);
 
   useEffect(() => {
     const interval = window.setInterval(() => {
@@ -294,7 +248,27 @@ export default function Page() {
               ref={carouselRef}
               className="flex gap-5 overflow-x-auto scroll-smooth pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             >
-              {events.map((event) => (
+              {isLoadingEvents && (
+                <div className="flex h-[260px] w-full min-w-[340px] items-center justify-center rounded-[18px] border border-white/10 bg-white/[0.03] px-6 text-center text-sm text-slate-300">
+                  Chargement des événements...
+                </div>
+              )}
+
+              {eventsError && (
+                <div className="flex h-[260px] w-full min-w-[340px] items-center justify-center rounded-[18px] border border-red-400/30 bg-red-500/10 px-6 text-center text-sm text-red-200">
+                  {eventsError}
+                </div>
+              )}
+
+              {!isLoadingEvents && !eventsError && upcomingEvents.length === 0 && (
+                <div className="flex h-[260px] w-full min-w-[340px] items-center justify-center rounded-[18px] border border-white/10 bg-white/[0.03] px-6 text-center text-sm text-slate-300">
+                  Aucun événement disponible.
+                </div>
+              )}
+
+              {!isLoadingEvents &&
+                !eventsError &&
+                upcomingEvents.map((event) => (
                 <article
                   key={event.id}
                   className="group w-[340px] shrink-0 overflow-hidden rounded-[18px] border border-white/15 bg-[#111827]/85 shadow-[0_22px_60px_rgba(0,0,0,0.28)] transition duration-300 hover:-translate-y-1 hover:border-[#a855f7]/45"
@@ -302,7 +276,7 @@ export default function Page() {
                   <div
                     className="relative h-[122px] overflow-hidden"
                     style={{
-                      backgroundImage: `url(${event.background})`,
+                      backgroundImage: "url('/home-ger.png')",
                       backgroundSize: "cover",
                       backgroundPosition: "center",
                     }}
@@ -311,14 +285,14 @@ export default function Page() {
 
                     <div className="absolute left-4 top-4 flex h-[58px] w-[56px] flex-col items-center justify-center rounded-[10px] border border-[#b15cff] bg-[#11152d]/80 shadow-[0_10px_25px_rgba(0,0,0,0.38)] backdrop-blur-md">
                       <span className="text-[22px] font-bold leading-none text-white">
-                        {event.day}
+                        {formatDay(event.startDate)}
                       </span>
                       <span className="mt-1 text-[10px] font-semibold text-white">
-                        {event.month}
+                        {formatMonth(event.startDate)}
                       </span>
                     </div>
 
-                    {event.live && (
+                    {isEventLive(event.startDate, event.endDate) && (
                       <div className="absolute right-4 top-4 flex items-center gap-1.5 rounded-full bg-[#ff4d6d] px-2.5 py-1 text-[10px] font-bold uppercase text-white">
                         <span className="h-1.5 w-1.5 rounded-full bg-white" />
                         Live
@@ -345,7 +319,7 @@ export default function Page() {
 
                       <span className="flex items-center gap-2">
                         <CardCalendarIcon />
-                        {event.date}
+                        {formatEventDate(event.startDate, event.endDate)}
                       </span>
                     </div>
                   </div>
@@ -400,7 +374,7 @@ export default function Page() {
             <div className="grid grid-cols-2 gap-x-8 gap-y-5 sm:grid-cols-4 lg:min-w-[650px]">
               <StatItem
                 icon={<CalendarStatsIcon />}
-                value="25+"
+                value={`${events.length}`}
                 label="Événements"
               />
 
