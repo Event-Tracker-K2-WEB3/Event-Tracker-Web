@@ -5,9 +5,9 @@ export default function Page() {
     <main className="min-h-[calc(100vh-76px)]">
       <section className="relative h-full min-h-[470px] overflow-hidden border-b border-white/5 bg-[#050817]">
         {/* Effets de lumière uniquement sur la partie gauche */}
-<div className="absolute inset-y-0 left-0 w-[58%] bg-[radial-gradient(circle_at_45%_30%,rgba(76,54,194,0.22),transparent_52%)]" />
+        <div className="absolute inset-y-0 left-0 w-[58%] bg-[radial-gradient(circle_at_45%_30%,rgba(76,54,194,0.22),transparent_52%)]" />
 
-        <div className="relative mx-auto grid h-full w-full pl-50 grid-cols-1 lg:grid-cols-[46%_54%]">
+        <div className="relative mx-auto grid h-full w-full pl-12 grid-cols-1 lg:grid-cols-[46%_54%]">
           {/* Partie gauche */}
           <div className="z-10 flex flex-col justify-center px-6 py-8 sm:px-10 lg:px-0 lg:pl-2">
             {/* Badge */}
@@ -35,9 +35,11 @@ export default function Page() {
             <div className="mt-7 flex h-[58px] w-full max-w-[575px] items-center gap-3 rounded-2xl border border-white/15 bg-white/[0.04] px-4 shadow-[0_18px_60px_rgba(0,0,0,0.28)]">
               <SearchIcon />
 
-              <span className="min-w-0 flex-1 truncate text-[14px] text-slate-400">
-                Rechercher un événement, un sujet, un intervenant...
-              </span>
+              <input
+                type="text"
+                placeholder="Rechercher un événement, un sujet, un intervenant..."
+                className="min-w-0 flex-1 bg-transparent text-[14px] text-white placeholder:text-slate-400 outline-none"
+              />
 
               <button className="h-[42px] shrink-0 rounded-xl bg-gradient-to-r from-[#7c3aed] to-[#6d4dff] px-5 text-[14px] font-semibold text-white shadow-[0_10px_30px_rgba(124,58,237,0.36)] transition hover:brightness-110">
                 Rechercher
@@ -69,19 +71,19 @@ export default function Page() {
           {/* Partie droite */}
           <div className="relative hidden lg:block ">
             {/* Image / zone visuelle */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_55%_18%,rgba(64,79,255,0.62),transparent_28%),radial-gradient(circle_at_80%_34%,rgba(123,55,255,0.45),transparent_30%),linear-gradient(90deg,rgba(5,8,23,1)_0%,rgba(5,8,23,0.25)_22%,rgba(5,8,23,0.12)_100%)] " 
-            style={{
-              backgroundImage: "url('/home-ger.png')",
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-            }}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_55%_18%,rgba(64,79,255,0.62),transparent_28%),radial-gradient(circle_at_80%_34%,rgba(123,55,255,0.45),transparent_30%),linear-gradient(90deg,rgba(5,8,23,1)_0%,rgba(5,8,23,0.25)_22%,rgba(5,8,23,0.12)_100%)] "
+              style={{
+                backgroundImage: "url('/home-ger.png')",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }}
             />
 
             {/* À remplacer plus tard par la vraie image de conférence */}
             <div className="absolute inset-0 bg-[linear-gradient(90deg,#050817_0%,rgba(5,8,23,0.92)_8%,rgba(5,8,23,0.55)_18%,rgba(5,8,23,0.12)_32%,transparent_45%)]" />
-            
+
             {/* Carte session live */}
-            <div className="absolute bottom-[28px] right-[26px] w-[355px] rounded-[22px] border border-white/20 bg-[#0b0c1f]/55 p-6 shadow-[0_24px_80px_rgba(0,0,0,0.52)] backdrop-blur-[18px]" >  
+            <div className="absolute bottom-[28px] right-[26px] w-[355px] rounded-[22px] border border-white/20 bg-[#0b0c1f]/55 p-6 shadow-[0_24px_80px_rgba(0,0,0,0.52)] backdrop-blur-[18px]" >
               <div className="mb-4 flex items-center gap-2 text-[12px] font-bold uppercase tracking-[0.06em] text-slate-200">
                 <span className="h-2 w-2 rounded-full bg-[#ff4d6d]" />
                 En ce moment
