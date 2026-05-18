@@ -1,34 +1,40 @@
-'use client'
 
-import React, { useState } from "react"
 import { FilterSidebar } from "./FilterSidebar"
-// Supposons que tu as déjà un composant EventList ou que tu vas le créer
-// import { EventList } from "./EventList" 
+import { PaginatedResponse } from "../services/eventService"
+import EventList from "./EventList"
+import Pagination from "./Pagination"
 
-export const EventExplorer = () => {
-  // État partagé pour les filtres (exemple pour ton équipe)
-  const [filters, setFilters] = useState({
-    city: "",
-    date: "all",
-  })
+interface EventExplorerProps {
+  data: PaginatedResponse;
+  currentPage: number;
+}
+
+
+export const EventExplorer = ({ data, currentPage }: EventExplorerProps) => {
 
   return (
-    <div className="px-12 bg-event-bg flex flex-1 flex-col lg:flex-row gap-12">
-      
-      {/* 1. Colonne de gauche : Sidebar (Largeur fixe sur desktop) */}
-      <div className="w-full lg:w-[260px] shrink-0">
+    <div className="dark bg-event-bg flex-1 flex flex-col lg:flex-row  min-h-0 px-6 lg:px-12 gap-4 pb-4">
+
+      <div className="w-full lg:w-[260px] shrink-0 overflow-auto">
         <FilterSidebar />
       </div>
 
-      {/* 2. Colonne de droite : Liste des événements (Prend tout l'espace restant) */}
-      <main className="flex-1 space-y-8">
+      <main className="flex-1 min-h-0 w-full flex flex-col gap-4">
 
-        {/* C'est ici que ta liste d'événements sera injectée */}
-        <div className="min-h-[400px] w-full rounded-2xl border border-dashed border-event-border/30 flex items-center justify-center text-event-muted italic">
-          {/* <EventList filters={filters} /> */}
-          calmos fa mbola ho avy...
-    
+        
+        <div className="flex-1 h-full">
+          <EventList events={data.content} />
         </div>
+
+        <div className="shrink-0 flex justify-center">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={data.totalPages}
+            isFirstPage={data.first}
+            isLastPage={data.last}
+          />
+        </div>
+
       </main>
 
     </div>
