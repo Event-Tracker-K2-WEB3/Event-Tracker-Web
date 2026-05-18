@@ -92,70 +92,112 @@ export default function SpeakerExplorer({ speakers }: SpeakerExplorerProps) {
         </div>
       </section>
 
-      {/* ── FILTRES ── */}
+            {/* ── BARRE DE RECHERCHE & FILTRES PREMIUM (GLASSMORPHISM) ── */}
       <section className="px-6 pb-8">
-        <div className="max-w-7xl mx-auto space-y-4">
-          {/* Recherche */}
-          <div className="relative">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/30"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
-            <input
-              type="text"
-              placeholder="Rechercher par nom, spécialité, entreprise..."
-              value={recherche}
-              onChange={(e) => {
-                setRecherche(e.target.value);
-                setVisible(6);
-              }}
-              className="w-full bg-white/5 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white placeholder:text-white/30 focus:outline-none focus:border-violet-500 transition-colors text-sm"
-            />
-          </div>
-
-          {/* Domaine */}
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-white/30 text-xs uppercase tracking-wider w-16">Domaine</span>
-            {DOMAINES.map((d) => (
-              <FilterPill key={d} label={d} active={domaine === d} onClick={() => { setDomaine(d); setVisible(6); }} />
-            ))}
-          </div>
-
-          {/* Jour + Type + Tri */}
-          <div className="flex flex-wrap gap-6 items-center">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-white/30 text-xs uppercase tracking-wider w-8">Jour</span>
-              {JOURS.map((j) => (
-                <FilterPill key={j} label={j} active={jour === j} onClick={() => { setJour(j); setVisible(6); }} />
-              ))}
-            </div>
-
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-white/30 text-xs uppercase tracking-wider w-8">Type</span>
-              {TYPES_SESSION.map((t) => (
-                <FilterPill key={t} label={t} active={typeSession === t} onClick={() => { setTypeSession(t); setVisible(6); }} />
-              ))}
-            </div>
-
-            <div className="flex items-center gap-2 ml-auto">
-              <span className="text-white/30 text-xs uppercase tracking-wider">Tri</span>
-              <select
-                value={tri}
-                onChange={(e) => setTri(e.target.value)}
-                className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-white/70 text-sm focus:outline-none focus:border-violet-500 transition-colors"
+        <div className="max-w-7xl mx-auto bg-gradient-to-r from-[#0d0d17]/80 via-[#120e25]/70 to-[#0d0d17]/80 backdrop-blur-xl border border-violet-500/20 rounded-2xl p-5 shadow-[0_8px_32px_0_rgba(109,40,217,0.1)] flex flex-col xl:flex-row items-end gap-5 justify-between transition-all duration-300 hover:border-violet-500/30">
+          
+          {/* 1. CHAMP DE RECHERCHE (40-45% de la largeur sur grand écran) */}
+          <div className="w-full xl:w-[42%] flex flex-col gap-1.5">
+            <span className="text-white/40 text-xs font-medium tracking-wider uppercase pl-1">Recherche</span>
+            <div className="relative group">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 group-focus-within:text-violet-400 transition-colors"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
               >
-                {TRIS.map((t) => (
-                  <option key={t} value={t} className="bg-[#0f0f1a]">{t}</option>
-                ))}
-              </select>
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+              <input
+                type="text"
+                placeholder="Rechercher un intervenant par nom, spécialité, entreprise..."
+                value={recherche}
+                onChange={(e) => {
+                  setRecherche(e.target.value);
+                  setVisible(6);
+                }}
+                className="w-full bg-[#16122c]/40 border border-violet-500/10 rounded-xl pl-11 pr-4 py-3 text-white text-sm placeholder:text-white/30 focus:outline-none focus:border-violet-500/60 focus:bg-[#16122c]/60 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)] transition-all duration-300"
+              />
             </div>
+          </div>
+
+          {/* BLOC DES DROPDOWNS (Aligne les sélecteurs restants) */}
+          <div className="w-full xl:w-[55%] grid grid-cols-1 sm:grid-cols-4 gap-4">
+            
+            {/* 2. BLOC "FILTRE" DOMAINE */}
+            <div className="flex flex-col gap-1.5">
+              <span className="text-white/40 text-xs font-medium tracking-wider uppercase pl-1">Filtre</span>
+              <div className="relative">
+                <select
+                  value={domaine}
+                  onChange={(e) => { setDomaine(e.target.value); setVisible(6); }}
+                  className="w-full bg-[#16122c]/40 border border-violet-500/10 rounded-xl px-4 py-3 text-white/80 text-sm focus:outline-none focus:border-violet-500/60 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)] transition-all duration-300 appearance-none cursor-pointer hover:border-violet-500/30"
+                >
+                
+                  {DOMAINES.map((d) => (
+                    <option key={d} value={d} className="bg-[#0f0f1a] text-white">{d}</option>
+                  ))}
+                </select>
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-white/30 text-[10px] transition-colors group-hover:text-violet-400">▼</span>
+              </div>
+            </div>
+
+            {/* 3. SÉLECTEUR SECONDAIRE : JOUR */}
+            <div className="flex flex-col gap-1.5">
+              <span className="text-white/40 text-xs font-medium tracking-wider uppercase pl-1">Jour</span>
+              <div className="relative">
+                <select
+                  value={jour}
+                  onChange={(e) => { setJour(e.target.value); setVisible(6); }}
+                  className="w-full bg-[#16122c]/40 border border-violet-500/10 rounded-xl px-4 py-3 text-white/80 text-sm focus:outline-none focus:border-violet-500/60 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)] transition-all duration-300 appearance-none cursor-pointer hover:border-violet-500/30"
+                >
+                
+                  {JOURS.map((j) => (
+                    <option key={j} value={j} className="bg-[#0f0f1a] text-white">{j}</option>
+                  ))}
+                </select>
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-white/30 text-[10px]">▼</span>
+              </div>
+            </div>
+
+            {/* 3. SÉLECTEUR SECONDAIRE : TYPE DE SESSION */}
+            <div className="flex flex-col gap-1.5">
+              <span className="text-white/40 text-xs font-medium tracking-wider uppercase pl-1">Type</span>
+              <div className="relative">
+                <select
+                  value={typeSession}
+                  onChange={(e) => { setTypeSession(e.target.value); setVisible(6); }}
+                  className="w-full bg-[#16122c]/40 border border-violet-500/10 rounded-xl px-4 py-3 text-white/80 text-sm focus:outline-none focus:border-violet-500/60 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)] transition-all duration-300 appearance-none cursor-pointer hover:border-violet-500/30"
+                >
+                
+                  {TYPES_SESSION.map((t) => (
+                    <option key={t} value={t} className="bg-[#0f0f1a] text-white">{t}</option>
+                  ))}
+                </select>
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-white/30 text-[10px]">▼</span>
+              </div>
+            </div>
+
+            {/* 4. BLOC "TRIER PAR" */}
+            <div className="flex flex-col gap-1.5">
+              <span className="text-white/40 text-xs font-medium tracking-wider uppercase pl-1">Trier par</span>
+              <div className="relative">
+                <select
+                  value={tri}
+                  onChange={(e) => setTri(e.target.value)}
+                  className="w-full bg-[#16122c]/40 border border-violet-500/10 rounded-xl px-4 py-3 text-white/80 text-sm focus:outline-none focus:border-violet-500/60 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)] transition-all duration-300 appearance-none cursor-pointer hover:border-violet-500/30"
+                >
+                  {TRIS.map((t) => (
+                    <option key={t} value={t} className="bg-[#0f0f1a] text-white">{t}</option>
+                  ))}
+                </select>
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-white/30 text-[10px]">▼</span>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
