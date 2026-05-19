@@ -2,6 +2,7 @@ import HeroSection from './HeroSection';
 import MissionSection from './MissionSection';
 import FeaturesSection from './FeaturesSection';
 import StatsSection from './StatsSection';
+import FooterSection from "./FooterSection";
 
 export default function AboutPage() {
   return (
@@ -13,6 +14,8 @@ export default function AboutPage() {
         <FeaturesSection />
 
         <StatsSection />
+
+        <FooterSection />
       </div>
   );
 }
