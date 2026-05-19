@@ -21,14 +21,16 @@ export interface PaginatedResponse {
 }
 
 export const eventService = {
-  getAllEvents: async (page: number = 1, limit: number = 8): Promise<PaginatedResponse> => {
-    const response = await fetch(`${API_BASE_URL}/events?page=${page}&size=${limit}`);
-
+  getAllEvents: async (page: number = 1, limit: number = 8, search?: string): Promise<PaginatedResponse> => {
+    let url = `${API_BASE_URL}/events?page=${page}&size=${limit}`;
+    if (search && search.trim()) {
+      url += `&q=${encodeURIComponent(search)}`;
+    }
+    const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`Erreur: ${response.status}`);
     }
-
-    return response.json();
+    return response.json()
   },
 
   getEventById: async (id: string): Promise<Event> => {
