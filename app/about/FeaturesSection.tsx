@@ -9,7 +9,7 @@ export default function FeaturesSection() {
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           
-          {/* Card 1 - Events */}
+
           <Link href="/events" className="group flex flex-col justify-between sm:flex-row items-center gap-6 p-6 rounded-2xl bg-[#13132b] border border-white/5 hover:border-purple-500/40 hover:bg-[#181836] transition-all duration-300">
             <div className="space-y-3 flex-1">
               <div className="w-10 h-10 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center">
@@ -31,7 +31,7 @@ export default function FeaturesSection() {
             </div>
           </Link>
 
-          {/* Card 2 - Planning */}
+
           <Link href="/planning" className="group flex flex-col justify-between sm:flex-row items-center gap-6 p-6 rounded-2xl bg-[#13132b] border border-white/5 hover:border-purple-500/40 hover:bg-[#181836] transition-all duration-300">
             <div className="space-y-3 flex-1">
               <div className="w-10 h-10 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center">
@@ -53,7 +53,7 @@ export default function FeaturesSection() {
             </div>
           </Link>
 
-          {/* Card 3 - Speakers */}
+
           <Link href="/speakers" className="group flex flex-col justify-between sm:flex-row items-center gap-6 p-6 rounded-2xl bg-[#13132b] border border-white/5 hover:border-purple-500/40 hover:bg-[#181836] transition-all duration-300">
             <div className="space-y-3 flex-1">
               <div className="w-10 h-10 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center">

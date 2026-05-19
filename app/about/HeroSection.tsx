@@ -5,7 +5,7 @@ export default function HeroSection() {
     return (
         <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16 md:pt-32 md:pb-24 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             <div className="lg:col-span-7 z-10 space-y-6">
-                {/* Badge */}
+
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#13132b] border border-purple-500/30 text-purple-400 text-sm font-medium tracking-wide w-fit">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 111.063 1.06l-.041.02a.75.75 0 01-1.062-1.06zM12 21a9 9 0 110-18 9 9 0 010 18zm0 0v-4.5" />
@@ -13,19 +13,19 @@ export default function HeroSection() {
                     À PROPOS
                 </div>
 
-                {/* Title */}
+
                 <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
                     À propos de <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-purple-500 to-indigo-400">EventSync</span>
                 </h1>
 
-                {/* Description */}
+
                 <p className="text-gray-400 text-lg sm:text-xl max-w-2xl font-light leading-relaxed">
                     EventSync est la plateforme qui vous permet de vivre chaque événement plus simplement.
                     Suivez les sessions en direct, découvrez le programme, interagissez avec les intervenants
                     et organisez votre expérience.
                 </p>
 
-                {/* Buttons */}
+
                 <div className="flex flex-col sm:flex-row gap-4 pt-4">
                     <Link
                         href="/events"
@@ -48,7 +48,7 @@ export default function HeroSection() {
                 </div>
             </div>
 
-            {/* Right Image */}
+
             <div className="lg:col-span-5 relative w-full h-[300px] sm:h-[400px] rounded-2xl overflow-hidden group shadow-2xl shadow-purple-950/20">
                 <div className="absolute inset-0 bg-gradient-to-r from-[#0d0d1a] via-[#0d0d1a]/40 to-transparent z-10 pointer-events-none hidden lg:block" />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d1a] via-transparent to-transparent z-10 pointer-events-none lg:hidden" />

@@ -3,7 +3,7 @@ export default function MissionSection() {
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 border-t border-purple-500/10">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
 
-                {/* Left Mission Text */}
+
                 <div className="lg:col-span-5 space-y-4 lg:sticky lg:top-8">
                     <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">Notre mission</h2>
                     <p className="text-gray-400 text-base sm:text-lg leading-relaxed font-light">
@@ -12,9 +12,9 @@ export default function MissionSection() {
                     </p>
                 </div>
 
-                {/* Right Feature Cards */}
+
                 <div className="lg:col-span-7 space-y-4">
-                    {/* Card 1 */}
+
                     <div className="flex gap-5 p-6 rounded-2xl bg-[#13132b] border border-white/5 hover:border-purple-500/20 transition-all duration-300">
                         <div className="flex-shrink-0 flex items-center justify-center w-12 h-12 rounded-xl bg-purple-500/10 text-purple-400">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
@@ -27,7 +27,7 @@ export default function MissionSection() {
                         </div>
                     </div>
 
-                    {/* Card 2 */}
+
                     <div className="flex gap-5 p-6 rounded-2xl bg-[#13132b] border border-white/5 hover:border-purple-500/20 transition-all duration-300">
                         <div className="flex-shrink-0 flex items-center justify-center w-12 h-12 rounded-xl bg-purple-500/10 text-purple-400">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
@@ -40,7 +40,7 @@ export default function MissionSection() {
                         </div>
                     </div>
 
-                    {/* Card 3 */}
+
                     <div className="flex gap-5 p-6 rounded-2xl bg-[#13132b] border border-white/5 hover:border-purple-500/20 transition-all duration-300">
                         <div className="flex-shrink-0 flex items-center justify-center w-12 h-12 rounded-xl bg-purple-500/10 text-purple-400">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
