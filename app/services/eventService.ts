@@ -1,5 +1,4 @@
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
+const API_BASE_URL = 'http://localhost:8080';
 
 export interface Event {
   id: string;
@@ -10,40 +9,33 @@ export interface Event {
   location: string;
 }
 
-type EventPageResponse = {
+export interface PaginatedResponse {
   content: Event[];
-  empty: boolean;
-  first: boolean;
-  last: boolean;
-  number: number;
-  numberOfElements: number;
-  size: number;
   totalElements: number;
   totalPages: number;
-};
+  number: number;
+  size: number;
+  first: boolean;
+  last: boolean;
+  empty: boolean;
+}
 
 export const eventService = {
-  getAllEvents: async (): Promise<Event[]> => {
-    const response = await fetch(`${API_BASE_URL}/events`, {
-      cache: "no-store",
-    });
+  getAllEvents: async (page: number = 1, limit: number = 8): Promise<PaginatedResponse> => {
+    const response = await fetch(`${API_BASE_URL}/events?page=${page}&size=${limit}`);
 
     if (!response.ok) {
-      throw new Error(`Erreur API : ${response.status}`);
+      throw new Error(`Erreur: ${response.status}`);
     }
 
-    const data: EventPageResponse = await response.json();
-
-    return data.content;
+    return response.json();
   },
 
   getEventById: async (id: string): Promise<Event> => {
-    const response = await fetch(`${API_BASE_URL}/events/${id}`, {
-      cache: "no-store",
-    });
+    const response = await fetch(`${API_BASE_URL}/events/${id}`);
 
     if (!response.ok) {
-      throw new Error(`Erreur API : ${response.status}`);
+      throw new Error(`Erreur: ${response.status}`);
     }
 
     return response.json();

@@ -63,8 +63,8 @@ export default function Page() {
         setIsLoadingEvents(true);
         setEventsError(null);
 
-        const data = await eventService.getAllEvents();
-        setEvents(data);
+        const data = await eventService.getAllEvents(1, 8);
+        setEvents(data.content);
       } catch (error) {
         console.error("Erreur lors du chargement des événements :", error);
         setEventsError("Impossible de charger les événements.");
