@@ -1,8 +1,15 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  type FormEvent,
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { eventService, type Event } from "./services/eventService";
-
 
 function formatDay(dateString: string): string {
   return new Date(dateString).getDate().toString().padStart(2, "0");
@@ -40,13 +47,19 @@ function isEventLive(startDate: string, endDate: string): boolean {
 
 export default function Page() {
   const carouselRef = useRef<HTMLDivElement>(null);
+
   const [events, setEvents] = useState<Event[]>([]);
+  const [totalEvents, setTotalEvents] = useState(0);
   const [isLoadingEvents, setIsLoadingEvents] = useState(true);
   const [eventsError, setEventsError] = useState<string | null>(null);
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [activeSearch, setActiveSearch] = useState("");
+
   const upcomingEvents = useMemo(() => {
     return [...events].sort(
-      (a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+      (a, b) =>
+        new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
     );
   }, [events]);
 
@@ -57,24 +70,54 @@ export default function Page() {
     });
   };
 
-  useEffect(() => {
-    const loadEvents = async () => {
-      try {
-        setIsLoadingEvents(true);
-        setEventsError(null);
+  const resetCarouselPosition = () => {
+    carouselRef.current?.scrollTo({
+      left: 0,
+      behavior: "smooth",
+    });
+  };
 
-        const data = await eventService.getAllEvents(1, 8);
-        setEvents(data.content);
-      } catch (error) {
-        console.error("Erreur lors du chargement des événements :", error);
-        setEventsError("Impossible de charger les événements.");
-      } finally {
-        setIsLoadingEvents(false);
-      }
-    };
+  const loadEvents = useCallback(async (query: string = "") => {
+    try {
+      setIsLoadingEvents(true);
+      setEventsError(null);
 
-    loadEvents();
+      const data = query
+        ? await eventService.searchEvents(query, 1, 8)
+        : await eventService.getAllEvents(1, 8);
+
+      setEvents(data.content);
+      setTotalEvents(data.totalElements);
+    } catch (error) {
+      console.error("Erreur lors du chargement des événements :", error);
+      setEventsError("Impossible de charger les événements.");
+      setEvents([]);
+      setTotalEvents(0);
+    } finally {
+      setIsLoadingEvents(false);
+    }
   }, []);
+
+  const handleSearch = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const normalizedSearch = searchTerm.trim();
+
+    setActiveSearch(normalizedSearch);
+    await loadEvents(normalizedSearch);
+    resetCarouselPosition();
+  };
+
+  const handleResetSearch = async () => {
+    setSearchTerm("");
+    setActiveSearch("");
+    await loadEvents();
+    resetCarouselPosition();
+  };
+
+  useEffect(() => {
+    loadEvents();
+  }, [loadEvents]);
 
   useEffect(() => {
     const interval = window.setInterval(() => {
@@ -85,6 +128,10 @@ export default function Page() {
       }
 
       const maxScrollLeft = carousel.scrollWidth - carousel.clientWidth;
+
+      if (maxScrollLeft <= 0) {
+        return;
+      }
 
       if (carousel.scrollLeft >= maxScrollLeft - 10) {
         carousel.scrollTo({
@@ -106,20 +153,18 @@ export default function Page() {
 
   return (
     <main className="min-h-[calc(100vh-76px)]">
+      {/* HERO */}
       <section className="relative h-full min-h-[470px] overflow-hidden border-b border-white/5 bg-[#050817]">
-        {/* Effets de lumière uniquement sur la partie gauche */}
         <div className="absolute inset-y-0 left-0 w-[58%] bg-[radial-gradient(circle_at_45%_30%,rgba(76,54,194,0.22),transparent_52%)]" />
 
-        <div className="relative mx-auto grid h-full w-full grid-cols-1 pl-12 lg:grid-cols-[46%_54%]">
+        <div className="relative mx-auto grid h-full w-full grid-cols-1 pl-0 lg:grid-cols-[46%_54%] lg:pl-12">
           {/* Partie gauche */}
           <div className="z-10 flex flex-col justify-center px-6 py-8 sm:px-10 lg:px-0 lg:pl-2">
-            {/* Badge */}
             <div className="mb-5 inline-flex w-fit items-center gap-2 rounded-full border border-white/15 bg-white/[0.03] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.04em] text-slate-200">
               <CalendarIcon />
               Plateforme d’événements
             </div>
 
-            {/* Titre */}
             <h1 className="max-w-[520px] text-[42px] font-extrabold leading-[0.98] tracking-[-0.04em] text-white sm:text-[56px] lg:text-[58px]">
               Vivez chaque <br />
               événement <br />
@@ -128,26 +173,34 @@ export default function Page() {
               </span>
             </h1>
 
-            {/* Description */}
             <p className="mt-5 max-w-[520px] text-[15px] leading-7 text-slate-300">
               Découvrez des conférences inspirantes, des ateliers pratiques et
               interagissez en direct avec les intervenants et la communauté.
             </p>
 
-            {/* Barre de recherche */}
-            <div className="mt-7 flex h-[58px] w-full max-w-[575px] items-center gap-3 rounded-2xl border border-white/15 bg-white/[0.04] px-4 shadow-[0_18px_60px_rgba(0,0,0,0.28)]">
+            {/* Recherche */}
+            <form
+              onSubmit={handleSearch}
+              className="mt-7 flex h-[58px] w-full max-w-[575px] items-center gap-3 rounded-2xl border border-white/15 bg-white/[0.04] px-4 shadow-[0_18px_60px_rgba(0,0,0,0.28)]"
+            >
               <SearchIcon />
 
               <input
                 type="text"
-                placeholder="Rechercher un événement, un sujet, un intervenant..."
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+                placeholder="Rechercher un événement, un lieu, un sujet..."
                 className="min-w-0 flex-1 bg-transparent text-[14px] text-white placeholder:text-slate-400 outline-none"
               />
 
-              <button className="h-[42px] shrink-0 rounded-xl bg-gradient-to-r from-[#7c3aed] to-[#6d4dff] px-5 text-[14px] font-semibold text-white shadow-[0_10px_30px_rgba(124,58,237,0.36)] transition hover:brightness-110">
+              <button
+                type="submit"
+                disabled={isLoadingEvents}
+                className="h-[42px] shrink-0 rounded-xl bg-gradient-to-r from-[#7c3aed] to-[#6d4dff] px-5 text-[14px] font-semibold text-white shadow-[0_10px_30px_rgba(124,58,237,0.36)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-70"
+              >
                 Rechercher
               </button>
-            </div>
+            </form>
 
             {/* Petits avantages */}
             <div className="mt-7 grid max-w-[650px] grid-cols-1 gap-5 sm:grid-cols-3">
@@ -173,7 +226,6 @@ export default function Page() {
 
           {/* Partie droite */}
           <div className="relative hidden lg:block">
-            {/* Image / zone visuelle */}
             <div
               className="absolute inset-0 bg-[radial-gradient(circle_at_55%_18%,rgba(64,79,255,0.62),transparent_28%),radial-gradient(circle_at_80%_34%,rgba(123,55,255,0.45),transparent_30%),linear-gradient(90deg,rgba(5,8,23,1)_0%,rgba(5,8,23,0.25)_22%,rgba(5,8,23,0.12)_100%)]"
               style={{
@@ -183,10 +235,8 @@ export default function Page() {
               }}
             />
 
-            {/* Transition entre le fond gauche et l'image */}
             <div className="absolute inset-0 bg-[linear-gradient(90deg,#050817_0%,rgba(5,8,23,0.92)_8%,rgba(5,8,23,0.55)_18%,rgba(5,8,23,0.12)_32%,transparent_45%)]" />
 
-            {/* Carte session live */}
             <div className="absolute bottom-[28px] right-[26px] w-[355px] rounded-[22px] border border-white/20 bg-[#0b0c1f]/55 p-6 shadow-[0_24px_80px_rgba(0,0,0,0.52)] backdrop-blur-[18px]">
               <div className="mb-4 flex items-center gap-2 text-[12px] font-bold uppercase tracking-[0.06em] text-slate-200">
                 <span className="h-2 w-2 rounded-full bg-[#ff4d6d]" />
@@ -223,24 +273,34 @@ export default function Page() {
         </div>
       </section>
 
-      {/* Section événements à venir */}
+      {/* SECTION ÉVÉNEMENTS */}
       <section className="relative overflow-hidden border-b border-white/5 bg-[#09101f] py-8">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(76,54,194,0.14),transparent_30%),radial-gradient(circle_at_82%_20%,rgba(88,28,255,0.12),transparent_34%)]" />
 
         <div className="relative mx-auto w-full px-6 lg:px-[88px]">
-          <div className="mb-5 flex items-end justify-between gap-6">
+          <div className="mb-5 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
             <div>
               <div className="mb-2 flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[0.06em] text-slate-300">
                 <UpcomingCalendarIcon />
-                Événements à venir
+                {activeSearch ? "Résultats de recherche" : "Événements à venir"}
               </div>
 
               <h2 className="text-[25px] font-bold tracking-[-0.03em] text-white">
-                Explorez les prochains événements
+                {activeSearch
+                  ? `Résultats pour « ${activeSearch} »`
+                  : "Explorez les prochains événements"}
               </h2>
             </div>
 
-
+            {activeSearch && (
+              <button
+                type="button"
+                onClick={handleResetSearch}
+                className="w-fit rounded-xl border border-white/15 bg-white/[0.04] px-4 py-2 text-[13px] font-semibold text-slate-200 transition hover:border-[#a855f7]/50 hover:bg-white/[0.08]"
+              >
+                Réinitialiser la recherche
+              </button>
+            )}
           </div>
 
           <div className="relative">
@@ -260,71 +320,75 @@ export default function Page() {
                 </div>
               )}
 
-              {!isLoadingEvents && !eventsError && upcomingEvents.length === 0 && (
-                <div className="flex h-[260px] w-full min-w-[340px] items-center justify-center rounded-[18px] border border-white/10 bg-white/[0.03] px-6 text-center text-sm text-slate-300">
-                  Aucun événement disponible.
-                </div>
-              )}
+              {!isLoadingEvents &&
+                !eventsError &&
+                upcomingEvents.length === 0 && (
+                  <div className="flex h-[260px] w-full min-w-[340px] items-center justify-center rounded-[18px] border border-white/10 bg-white/[0.03] px-6 text-center text-sm text-slate-300">
+                    {activeSearch
+                      ? `Aucun événement trouvé pour « ${activeSearch} ».`
+                      : "Aucun événement disponible."}
+                  </div>
+                )}
 
               {!isLoadingEvents &&
                 !eventsError &&
                 upcomingEvents.map((event) => (
-                <article
-                  key={event.id}
-                  className="group w-[340px] shrink-0 overflow-hidden rounded-[18px] border border-white/15 bg-[#111827]/85 shadow-[0_22px_60px_rgba(0,0,0,0.28)] transition duration-300 hover:-translate-y-1 hover:border-[#a855f7]/45"
-                >
-                  <div
-                    className="relative h-[122px] overflow-hidden"
-                    style={{
-                      backgroundImage: "url('/home-ger.png')",
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                    }}
+                  <article
+                    key={event.id}
+                    className="group w-[340px] shrink-0 overflow-hidden rounded-[18px] border border-white/15 bg-[#111827]/85 shadow-[0_22px_60px_rgba(0,0,0,0.28)] transition duration-300 hover:-translate-y-1 hover:border-[#a855f7]/45"
                   >
-                    <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(0,0,0,0.24))]" />
+                    <div
+                      className="relative h-[122px] overflow-hidden"
+                      style={{
+                        backgroundImage: "url('/home-ger.png')",
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                      }}
+                    >
+                      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(0,0,0,0.24))]" />
 
-                    <div className="absolute left-4 top-4 flex h-[58px] w-[56px] flex-col items-center justify-center rounded-[10px] border border-[#b15cff] bg-[#11152d]/80 shadow-[0_10px_25px_rgba(0,0,0,0.38)] backdrop-blur-md">
-                      <span className="text-[22px] font-bold leading-none text-white">
-                        {formatDay(event.startDate)}
-                      </span>
-                      <span className="mt-1 text-[10px] font-semibold text-white">
-                        {formatMonth(event.startDate)}
-                      </span>
-                    </div>
-
-                    {isEventLive(event.startDate, event.endDate) && (
-                      <div className="absolute right-4 top-4 flex items-center gap-1.5 rounded-full bg-[#ff4d6d] px-2.5 py-1 text-[10px] font-bold uppercase text-white">
-                        <span className="h-1.5 w-1.5 rounded-full bg-white" />
-                        Live
+                      <div className="absolute left-4 top-4 flex h-[58px] w-[56px] flex-col items-center justify-center rounded-[10px] border border-[#b15cff] bg-[#11152d]/80 shadow-[0_10px_25px_rgba(0,0,0,0.38)] backdrop-blur-md">
+                        <span className="text-[22px] font-bold leading-none text-white">
+                          {formatDay(event.startDate)}
+                        </span>
+                        <span className="mt-1 text-[10px] font-semibold text-white">
+                          {formatMonth(event.startDate)}
+                        </span>
                       </div>
-                    )}
 
-                    <div className="absolute -bottom-8 right-6 h-24 w-24 rounded-full bg-white/10 blur-2xl" />
-                  </div>
+                      {isEventLive(event.startDate, event.endDate) && (
+                        <div className="absolute right-4 top-4 flex items-center gap-1.5 rounded-full bg-[#ff4d6d] px-2.5 py-1 text-[10px] font-bold uppercase text-white">
+                          <span className="h-1.5 w-1.5 rounded-full bg-white" />
+                          Live
+                        </div>
+                      )}
 
-                  <div className="p-4">
-                    <h3 className="text-[16px] font-bold text-white">
-                      {event.title}
-                    </h3>
-
-                    <p className="mt-2 min-h-[44px] text-[13px] leading-5 text-slate-300">
-                      {event.description}
-                    </p>
-
-                    <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-[12px] text-slate-300">
-                      <span className="flex items-center gap-2">
-                        <CardPinIcon />
-                        {event.location}
-                      </span>
-
-                      <span className="flex items-center gap-2">
-                        <CardCalendarIcon />
-                        {formatEventDate(event.startDate, event.endDate)}
-                      </span>
+                      <div className="absolute -bottom-8 right-6 h-24 w-24 rounded-full bg-white/10 blur-2xl" />
                     </div>
-                  </div>
-                </article>
-              ))}
+
+                    <div className="p-4">
+                      <h3 className="text-[16px] font-bold text-white">
+                        {event.title}
+                      </h3>
+
+                      <p className="mt-2 min-h-[44px] text-[13px] leading-5 text-slate-300">
+                        {event.description}
+                      </p>
+
+                      <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-[12px] text-slate-300">
+                        <span className="flex items-center gap-2">
+                          <CardPinIcon />
+                          {event.location}
+                        </span>
+
+                        <span className="flex items-center gap-2">
+                          <CardCalendarIcon />
+                          {formatEventDate(event.startDate, event.endDate)}
+                        </span>
+                      </div>
+                    </div>
+                  </article>
+                ))}
             </div>
 
             <button
@@ -347,12 +411,11 @@ export default function Page() {
           </div>
         </div>
       </section>
-      {/* Bande de présentation EventSync */}
+
+      {/* BANDE DE PRÉSENTATION */}
       <section className="bg-[#08101f] pb-6">
         <div className="mx-auto w-full max-w-[1360px] px-6 lg:px-0">
           <div className="flex flex-col gap-8 rounded-[22px] border border-[#9b59ff]/40 bg-[linear-gradient(90deg,rgba(27,22,52,0.92),rgba(25,27,57,0.92))] px-7 py-5 shadow-[0_20px_60px_rgba(0,0,0,0.22)] lg:flex-row lg:items-center lg:justify-between">
-
-            {/* Partie gauche */}
             <div className="flex items-center gap-5">
               <div className="flex h-[62px] w-[62px] shrink-0 items-center justify-center rounded-full bg-[#2c1b68] text-[#9d5cff]">
                 <CompassIcon />
@@ -370,12 +433,11 @@ export default function Page() {
               </div>
             </div>
 
-            {/* Statistiques */}
-            <div className="grid grid-cols-2 gap-x-8 gap-y-5 sm:grid-cols-4 lg:min-w-[650px]">
+            <div className="grid grid-cols-2 gap-x-8 gap-y-5 sm:grid-cols-3 lg:min-w-[520px]">
               <StatItem
                 icon={<CalendarStatsIcon />}
-                value={`${events.length}`}
-                label="Événements"
+                value={`${totalEvents}`}
+                label={activeSearch ? "Résultats" : "Événements"}
               />
 
               <StatItem
@@ -396,12 +458,13 @@ export default function Page() {
     </main>
   );
 }
+
 function StatItem({
   icon,
   value,
   label,
 }: {
-  icon: React.ReactNode;
+  icon: ReactNode;
   value: string;
   label: string;
 }) {
@@ -416,6 +479,29 @@ function StatItem({
           {value}
         </p>
         <p className="mt-1 text-[13px] text-slate-300">{label}</p>
+      </div>
+    </div>
+  );
+}
+
+function FeatureItem({
+  icon,
+  title,
+  text,
+}: {
+  icon: ReactNode;
+  title: string;
+  text: string;
+}) {
+  return (
+    <div className="flex items-center gap-3">
+      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[#47208f] to-[#25135a] text-[#c084fc] shadow-[0_10px_30px_rgba(93,45,196,0.28)]">
+        {icon}
+      </div>
+
+      <div>
+        <h3 className="text-[12px] font-semibold text-white">{title}</h3>
+        <p className="mt-1 text-[11px] text-slate-400">{text}</p>
       </div>
     </div>
   );
@@ -466,26 +552,6 @@ function UserStatsIcon() {
   );
 }
 
-function ParticipantsIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-      <path
-        d="M12 21C12 21 18 17.5 18 11V5L12 3L6 5V11C6 17.5 12 21 12 21Z"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M9.5 11.5L11.2 13.2L14.8 9.6"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
 function SessionIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -502,29 +568,6 @@ function SessionIcon() {
         strokeLinecap="round"
       />
     </svg>
-  );
-}
-
-function FeatureItem({
-  icon,
-  title,
-  text,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  text: string;
-}) {
-  return (
-    <div className="flex items-center gap-3">
-      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[#47208f] to-[#25135a] text-[#c084fc] shadow-[0_10px_30px_rgba(93,45,196,0.28)]">
-        {icon}
-      </div>
-
-      <div>
-        <h3 className="text-[12px] font-semibold text-white">{title}</h3>
-        <p className="mt-1 text-[11px] text-slate-400">{text}</p>
-      </div>
-    </div>
   );
 }
 
@@ -681,26 +724,6 @@ function UpcomingCalendarIcon() {
         stroke="currentColor"
         strokeWidth="2"
         strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
-function ArrowRightTextIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-      <path
-        d="M5 12H19"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-      <path
-        d="M13 6L19 12L13 18"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
       />
     </svg>
   );
