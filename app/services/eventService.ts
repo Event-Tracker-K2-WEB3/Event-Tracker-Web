@@ -40,4 +40,20 @@ export const eventService = {
 
     return response.json();
   },
+  
+  searchEvents: async (
+    query: string,
+    page: number = 1,
+    limit: number = 8
+  ): Promise<PaginatedResponse> => {
+    const response = await fetch(
+      `${API_BASE_URL}/events?page=${page}&size=${limit}&q=${encodeURIComponent(query)}`
+    );
+  
+    if (!response.ok) {
+      throw new Error(`Erreur: ${response.status}`);
+    }
+  
+    return response.json();
+  },
 };
