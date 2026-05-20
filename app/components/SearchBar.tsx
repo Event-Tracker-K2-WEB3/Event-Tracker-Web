@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import { useState, useEffect, useRef } from 'react';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { Search } from "lucide-react";
 import {
     InputGroup,
@@ -16,28 +16,46 @@ interface SearchBarProps {
 const SearchBar = ({ initialValue = '' }: SearchBarProps) => {
     const router = useRouter();
     const pathname = usePathname();
+    const searchParams = useSearchParams();
+
     const [value, setValue] = useState(initialValue);
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const isInternalChange = useRef(false);
 
-    // Debounce pour éviter trop de requêtes
     useEffect(() => {
-        const timer = setTimeout(() => {
-            const params = new URLSearchParams();
-            if (value) {
-                params.set('q', value);
-            }
-            router.push(`${pathname}?${params.toString()}`);
-        }, 300);
-
-        return () => clearTimeout(timer);
-    }, [value, router, pathname]);
+        const urlQuery = searchParams.get('q') || '';
+        if (urlQuery !== value && !isInternalChange.current) {
+            setValue(urlQuery);
+        }
+        isInternalChange.current = false;
+    }, [value, searchParams]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setValue(e.target.value);
+        const newValue = e.target.value;
+        setValue(newValue);
+        isInternalChange.current = true;
+
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+        }
+
+        timeoutRef.current = setTimeout(() => {
+            const params = new URLSearchParams(searchParams.toString());
+
+            if (newValue) {
+                params.set('q', newValue);
+            } else {
+                params.delete('q');
+            }
+
+            params.delete('page');
+            router.push(`${pathname}?${params.toString()}`);
+        }, 300);
     };
 
     return (
         <InputGroup className="dark bg-background max-w-md rounded-md overflow-hidden border-border focus-within:border-event-primary focus-within:ring-1 focus-within:ring-event-primary/50 transition-all">
-            <InputGroupInput 
+            <InputGroupInput
                 placeholder="Rechercher un événement, un sujet, une ville..."
                 value={value}
                 onChange={handleChange}
