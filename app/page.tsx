@@ -229,7 +229,7 @@ export default function Page() {
         <div className="absolute inset-y-0 left-0 w-[58%] bg-[radial-gradient(circle_at_45%_30%,rgba(76,54,194,0.22),transparent_52%)]" />
 
         <div className="relative mx-auto grid h-full w-full grid-cols-1 pl-0 lg:grid-cols-[46%_54%] lg:pl-12">
-          <div className="z-10 flex flex-col justify-center px-6 py-8 sm:px-10 lg:px-0 lg:pl-2">
+          <div className="z-10 flex flex-col justify-center py-8 px-12">
             <div className="mb-5 inline-flex w-fit items-center gap-2 rounded-full border border-white/15 bg-white/[0.03] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.04em] text-slate-200">
               <CalendarIcon />
               Plateforme d’événements
@@ -302,7 +302,7 @@ export default function Page() {
 
             <div className="absolute inset-0 bg-[linear-gradient(90deg,#050817_0%,rgba(5,8,23,0.92)_8%,rgba(5,8,23,0.55)_18%,rgba(5,8,23,0.12)_32%,transparent_45%)]" />
 
-            <div className="absolute bottom-[28px] right-[26px] w-[355px] rounded-[22px] border border-white/20 bg-[#0b0c1f]/55 p-6 shadow-[0_24px_80px_rgba(0,0,0,0.52)] backdrop-blur-[18px]">
+            <div className="absolute bottom-[28px] right-[26px] w-[355px] rounded-[22px] border border-white/20 bg-[#0b0c1f]/55 p-6 shadow-[0_24px_80px_rgba(0,0,0,0.52)] backdrop-blur-[18px] mr-12">
               <div className="mb-4 flex items-center gap-2 text-[12px] font-bold uppercase tracking-[0.06em] text-slate-200">
                 <span className="h-2 w-2 rounded-full bg-[#ff4d6d]" />
                 En ce moment
@@ -343,7 +343,7 @@ export default function Page() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(76,54,194,0.14),transparent_30%),radial-gradient(circle_at_82%_20%,rgba(88,28,255,0.12),transparent_34%)]" />
 
         <div className="relative mx-auto w-full px-6 lg:px-[88px]">
-          <div className="mb-5 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+          <div className="mb-5 flex flex-col justify-between gap-4 sm:flex-row sm:items-end px-2">
             <div>
               <div className="mb-2 flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[0.06em] text-slate-300">
                 <UpcomingCalendarIcon />
@@ -509,6 +509,46 @@ export default function Page() {
           </div>
         </div>
       </section>
+
+      {/* ── FOOTER ── */}
+<footer className="border-t border-white/5 bg-[#06060f]">
+<div className="max-w-7xl mx-auto px-6 py-12">
+  <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
+    <div className="md:col-span-2">
+      <a href="/" className="flex items-center gap-2 font-bold text-xl mb-4">
+      <span className="grid size-10 place-items-center">
+            <img src="/logo-event-tracker.png" alt="" />
+          </span>
+        <span><span className="text-white">Event</span><span className="text-violet-400">Sync</span></span>
+      </a>
+      <p className="text-white/40 text-sm leading-relaxed max-w-xs">
+        La plateforme qui connecte les événements et les participants en temps réel.
+      </p>
+    </div>
+
+    {[
+      { titre: "Navigation", liens: ["Accueil", "Événements", "Intervenants", "À propos"] },
+      { titre: "Ressources", liens: ["Programme", "FAQ", "Contact"] },
+      { titre: "Légal", liens: ["Mentions légales", "Confidentialité", "Conditions d'utilisation"] },
+    ].map(({ titre, liens }) => (
+      <div key={titre}>
+        <h4 className="text-white/60 text-xs uppercase tracking-widest mb-4">{titre}</h4>
+        <ul className="space-y-2.5">
+          {liens.map((l) => (
+            <li key={l}>
+              <a href="#" className="text-white/40 text-sm hover:text-white transition-colors">{l}</a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))}
+  </div>
+
+  <div className="mt-12 pt-6 border-t border-white/5 flex items-center justify-between">
+    <p className="text-white/25 text-sm">© 2026 EventSync. Tous droits réservés.</p>
+  </div>
+</div>
+</footer>
     </main>
   );
 }
@@ -718,3 +758,4 @@ function ArrowRightCarouselIcon() {
     </svg>
   );
 }
+
