@@ -398,10 +398,12 @@ export default function Page() {
               {!isLoadingEvents &&
                 !eventsError &&
                 upcomingEvents.map((event) => (
+                  
                   <article
                     key={event.id}
                     className="group w-[340px] shrink-0 overflow-hidden rounded-[18px] border border-white/15 bg-[#111827]/85 shadow-[0_22px_60px_rgba(0,0,0,0.28)] transition duration-300 hover:-translate-y-1 hover:border-[#a855f7]/45"
                   >
+                    <a href={`/events/${event.id}`}>
                     <div
                       className="relative h-[122px] overflow-hidden"
                       style={{
@@ -450,6 +452,7 @@ export default function Page() {
                         </span>
                       </div>
                     </div>
+                    </a>
                   </article>
                 ))}
             </div>
