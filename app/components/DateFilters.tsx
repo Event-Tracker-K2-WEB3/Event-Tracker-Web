@@ -1,5 +1,8 @@
+'use client'
+
 import { Label } from "./ui/label"
 import { RadioGroup, RadioGroupItem } from "../components/ui/radio-group"
+import { useRouter, useSearchParams } from "next/dist/client/components/navigation";
 
 const DATE_OPTIONS = [
     { id: "all", label: "Tous" },
@@ -8,15 +11,26 @@ const DATE_OPTIONS = [
     { id: "month", label: "Ce mois-ci" },
 ] as const;
 
-interface DateFiltersProps {
-    onDateChange: (value: string) => void;
-}
+export const DateFilters: React.FC = () => {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const currentDate = searchParams.get('date') || 'all';
 
-export const DateFilters: React.FC<DateFiltersProps> = ({ onDateChange }) => {
+    const handleDateChange = (date: string) => {
+        const params = new URLSearchParams(searchParams.toString());
+        if (date && date !== 'all') {
+            params.set('date', date);
+        } else {
+            params.delete('date');
+        }
+        params.delete('page'); // Reset page 1
+        router.push(`?${params.toString()}`);
+    };
+
     return (
         <RadioGroup
-            defaultValue="all"
-            onValueChange={onDateChange}
+            defaultValue={currentDate}
+            onValueChange={handleDateChange}
             className="flex flex-col gap-4"
         >
             {DATE_OPTIONS.map((option) => (
@@ -26,7 +40,7 @@ export const DateFilters: React.FC<DateFiltersProps> = ({ onDateChange }) => {
                         id={`date-${option.id}`}
                         className="border-event-border text-event-primary focus:ring-event-primary"
                     />
-                
+
                     <Label
                         htmlFor={`date-${option.id}`}
                         className="text-sm font-medium text-event-muted group-hover:text-event-text cursor-pointer transition-colors"

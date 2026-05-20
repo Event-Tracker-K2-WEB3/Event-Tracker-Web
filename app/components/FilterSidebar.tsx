@@ -1,19 +1,8 @@
-"use client"
-
 import SearchBar  from "./SearchBar"
 import { DateFilters } from "./DateFilters"
 import { MapPin, Calendar } from "lucide-react"
 
 export const FilterSidebar = () => {
-
-    const handleLocationSearch = (city: string) => {
-        console.log("Filtrage par ville :", city)
-    }
-
-    const handleDateChange = (dateRange: string) => {
-        console.log("Filtrage par date :", dateRange)
-    }
-
     return (
         <aside className="dark bg-background h-full w-full flex flex-col gap-8 rounded-md overflow-hidden">
 
@@ -24,7 +13,7 @@ export const FilterSidebar = () => {
                         <Calendar className="text-event-primary" size={18} />
                         <h3 className="font-semibold text-sm tracking-wider">Date</h3>
                     </div>
-                    <DateFilters onDateChange={handleDateChange} />
+                    <DateFilters/>
                 </section>
 
                 <div className="h-px bg-gradient-to-r from-transparent via-event-border/50 to-transparent" />
@@ -34,7 +23,7 @@ export const FilterSidebar = () => {
                         <MapPin className="text-event-primary" size={18} />
                         <h3 className="font-semibold text-sm tracking-wider">Lieu</h3>
                     </div>
-                    <SearchBar onSearch={handleLocationSearch} />
+                    <SearchBar/>
                 
                 </section>
 
