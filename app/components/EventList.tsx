@@ -12,8 +12,9 @@ const FAKE_EVENT: Event = {
 
 const EventList = ({ events }: { events: Event[] }) => {
 
-  const MIN_CARDS = 5;
-  const hasInvisibleCard = events.length < MIN_CARDS;
+  const TARGET_CARDS = 5;
+  const realCount = events.length;
+  const invisibleCardsNeeded = realCount > 0 ? Math.max(0, TARGET_CARDS - realCount) : 0;
 
 
   return (
@@ -22,11 +23,11 @@ const EventList = ({ events }: { events: Event[] }) => {
         {events.map((event) => (
           <EventCard key={event.id} event={event} />
         ))}
-        {hasInvisibleCard && (
-          <div className="invisible">
+        {Array(invisibleCardsNeeded).fill(null).map((_, index) => (
+          <div key={`invisible-${index}`} className="invisible">
             <EventCard event={FAKE_EVENT} />
           </div>
-        )}
+        ))}
       </div>
     </>
   );
