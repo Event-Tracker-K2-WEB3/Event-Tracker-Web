@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { MapPin, Calendar } from "lucide-react"
 import type { Event } from '../services/eventService';
+import { FavoriteButton } from './FavoriteButton';
 
 // Formater le jour (ex: "12")
 function formatDay(dateString: string): string {
@@ -90,6 +91,9 @@ export function EventCard({ event }: { event: Event }) {
           </div>
         </div>
       </div>
+
+      <FavoriteButton event={event} />
+
     </Link>
   );
 }
