@@ -1,43 +1,62 @@
-export interface Speaker {
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
+
+export type SpeakerSession = {
+  id: number;
+  title: string;
+  description: string;
+  type: string;
+  startTime: string;
+  endTime: string;
+  capacity: number;
+  eventId: string;
+  eventTitle: string;
+  roomId: number;
+  roomName: string;
+};
+
+export type Speaker = {
   id: number;
   name: string;
   role: string;
   specialty: string;
   company: string;
   bio: string;
-  photo: string | null;
+  photo: string;
   initials: string;
-  linkedin: string | null;
-  twitter: string | null;
-  website: string | null;
+  linkedin: string;
+  twitter: string;
+  website: string;
   day: string;
   sessionType: string;
-  sessions: number;
-}
+  sessionCount: number;
+};
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+export type SpeakerDetails = Speaker & {
+  sessions: SpeakerSession[];
+};
 
-export async function getSpeakers(): Promise<Speaker[]  > {
+export async function getSpeakers(): Promise<Speaker[]> {
+  const response = await fetch(`${API_BASE_URL}/speakers`, {
 
-  const res = await fetch(`${API_URL}/speakers`, {
     cache: "no-store",
   });
 
-  if (!res.ok) {
-    throw new Error(`Erreur récupération intervenants: ${res.status}`);
+  if (!response.ok) {
+    throw new Error("Failed to fetch speakers");
   }
 
-  return res.json();
+  return response.json();
 }
 
-export async function getSpeakerById(id: number): Promise<Speaker> {
-  const res = await fetch(`${API_URL}/speakers/${id}`, {
+export async function getSpeakerById(id: string): Promise<SpeakerDetails> {
+  const response = await fetch(`${API_BASE_URL}/speakers/${id}`, {
     cache: "no-store",
   });
 
-  if (!res.ok) {
-    throw new Error(`Intervenant introuvable: ${res.status}`);
+  if (!response.ok) {
+    throw new Error("Failed to fetch speaker details");
   }
 
-  return res.json();
+  return response.json();
 }

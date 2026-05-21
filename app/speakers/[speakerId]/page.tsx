@@ -65,20 +65,20 @@ export default function SpeakerDetailPage({ params }: Props) {
   const couleur = COULEURS_SPECIALITE[speaker.specialty] ?? COULEURS_SPECIALITE["Web"];
 
   return (
-    <div className="min-h-screen bg-[#080810] text-white font-sans antialiased pb-24">
+    <div className="min-h-screen bg-[#080810] text-white font-sans antialiased pb-24 pt-24">
       
-      {/* Bouton Retour */}
-      <div className="max-w-5xl mx-auto px-6 pt-8">
+      {/* Conteneur Sticky pour le Bouton Retour */}
+      <div className="sticky top-24 z-40 max-w-5xl mx-auto px-6 pointer-events-none">
         <Link 
           href="/speakers" 
-          className="group relative inline-flex items-center gap-2 py-1 text-white/40 hover:text-amber-100 transition-all duration-300 ease-out hover:-translate-x-1"
+          className="group pointer-events-auto inline-flex items-center gap-2 py-2 px-3 rounded-xl bg-white/[0.02] border border-white/5 backdrop-blur-md text-white/40 hover:text-amber-100 transition-all duration-300 ease-out hover:-translate-x-3 shadow-xl"
         >
           <span>← Retour aux intervenants</span>
           <span className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-violet-500 via-amber-400 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         </Link>
       </div>
 
-      <main className="max-w-5xl mx-auto px-6 mt-8 space-y-16">
+      <main className="max-w-5xl mx-auto px-6 mt-6 space-y-16">
         
         {/* SECTION PROFIL INTERVENANT */}
         <section 

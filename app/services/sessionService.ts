@@ -1,55 +1,41 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
-
-export interface SessionEvent {
-  id: string;
-  title: string;
-  description: string;
-  startDate: string;
-  endDate: string;
-  location: string;
-}
-
-export interface SessionRoom {
-  id: number;
-  name: string;
-}
-
 export interface SessionSpeaker {
   id: number;
   name: string;
   role: string;
-  specialty: string;
-  company: string;
-  bio: string;
-  photo: string | null;
-  initials: string;
-  linkedin: string | null;
-  twitter: string | null;
-  website: string | null;
-  day: string | null;
-  sessionType: string | null;
 }
 
-export interface Session {
+export interface SessionLink {
   id: number;
   title: string;
-  description: string;
-  startTime: string;
-  endTime: string;
-  type: string;
-  capacity: number | null;
-  event: SessionEvent;
-  room: SessionRoom | null;
-  speaker: SessionSpeaker | null;
+  startDate: string;
+  endDate: string;
 }
 
-export async function getSessionsByEvent(eventId: string): Promise<Session[]> {
-  const res = await fetch(`${API_URL}/events/${eventId}/sessions`, {
+export interface SessionDetail {
+  id: number;
+  title: string;
+  shortDescription: string;
+  description: string;
+  date: string;
+  startDate: string;
+  endDate: string;
+  room: string;
+  status: string;
+  image: string;
+  speaker: SessionSpeaker;
+  previousSession?: SessionLink;
+  nextSession?: SessionLink;
+}
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+
+export async function getSessionById(id: number | string): Promise<SessionDetail> {
+  const res = await fetch(`${API_URL}/sessions/${id}`, {
     cache: "no-store",
   });
 
   if (!res.ok) {
-    throw new Error(`Erreur récupération des sessions : ${res.status}`);
+    throw new Error(`Session introuvable: ${res.status}`);
   }
 
   return res.json();
