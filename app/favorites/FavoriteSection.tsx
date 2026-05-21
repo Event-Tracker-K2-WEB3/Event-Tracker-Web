@@ -167,7 +167,7 @@ export function FavoriteSection() {
                 <div className="event-container grid min-h-[230px] grid-cols-1 items-center gap-10 py-12 lg:grid-cols-[1fr_360px]">
                     <div className="flex items-center gap-6">
                         <div className="hidden h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-violet-500/15 text-violet-400 shadow-[0_0_45px_rgba(124,58,237,0.25)] sm:flex">
-                            <Trash2 size={36} fill="currentColor" />
+                            <Heart size={36} fill="currentColor" />
                         </div>
 
                         <div>
