@@ -2,7 +2,7 @@ import { EventExplorer } from '../components/EventExplorer';
 import EventFilterBlock from '../components/EventFilterBlock';
 import { eventService } from '../services/eventService';
 
-export default async function EventsPage({ searchParams }: { searchParams: Promise<{ page?: string; q?: string; date?: string; }> }) {
+export default async function EventsPage({ searchParams }: { searchParams: Promise<{ page?: string; q?: string; date?: string; location?: string }> }) {
   const params = await searchParams;
   const currentPage = params.page ? parseInt(params.page) : 1;
   const searchQuery = params.q || '';
