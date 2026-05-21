@@ -1,42 +1,41 @@
-export interface SessionSpeaker {
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
+
+export type SessionSpeaker = {
   id: number;
   name: string;
   role: string;
-}
+  specialty: string;
+  company: string;
+  photo?: string | null;
+  initials: string;
+};
 
-export interface SessionLink {
+export type SessionDetails = {
   id: number;
   title: string;
-  startDate: string;
-  endDate: string;
-}
-
-export interface SessionDetail {
-  id: number;
-  title: string;
-  shortDescription: string;
   description: string;
-  date: string;
-  startDate: string;
-  endDate: string;
-  room: string;
-  status: string;
-  image: string;
-  speaker: SessionSpeaker;
-  previousSession?: SessionLink;
-  nextSession?: SessionLink;
-}
+  type: string;
+  image?: string | null;
+  startTime: string;
+  endTime: string;
+  capacity: number;
+  eventId: string;
+  eventTitle: string;
+  roomId: number;
+  roomName: string;
+  live: boolean;
+  speakers: SessionSpeaker[];
+};
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
-
-export async function getSessionById(id: number | string): Promise<SessionDetail> {
-  const res = await fetch(`${API_URL}/sessions/${id}`, {
+export async function getSessionById(id: string): Promise<SessionDetails> {
+  const response = await fetch(`${API_BASE_URL}/sessions/${id}`, {
     cache: "no-store",
   });
 
-  if (!res.ok) {
-    throw new Error(`Session introuvable: ${res.status}`);
+  if (!response.ok) {
+    throw new Error("Failed to fetch session details");
   }
 
-  return res.json();
+  return response.json();
 }
