@@ -56,7 +56,7 @@ export default function PublicNavbar() {
           ))}
         </div>
 
-        <div>
+        <div className="hidden items-center gap-4 lg:flex">
           <Link
             href="/events/demo-event/planning"
             className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-event-primary to-event-secondary px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-event-primary/25 transition hover:scale-[1.02]"
@@ -64,6 +64,17 @@ export default function PublicNavbar() {
             <Calendar size={16} />
             <span>Voir le programme</span>
           </Link>
+        <div className="flex items-center gap-2">
+
+          <Link
+              href="/favorites"
+              title="Voir mes favoris"
+              className="grid size-[42px] shrink-0 place-items-center rounded-xl border border-event-border bg-event-surface/50 text-event-text transition hover:border-purple-500/50 hover:text-purple-400 backdrop-blur-md shadow-md"
+          >
+            <Heart size={18} className="fill-purple-500/20" />
+          </Link>
+
+        </div>
         </div>
 
         <button
@@ -81,17 +92,6 @@ export default function PublicNavbar() {
         </button>
 
 
-        <div className="flex items-center gap-2">
-
-          <Link
-              href="/favorites"
-              title="Voir mes favoris"
-              className="grid size-[42px] shrink-0 place-items-center rounded-xl border border-event-border bg-event-surface/50 text-event-text transition hover:border-purple-500/50 hover:text-purple-400 backdrop-blur-md shadow-md"
-          >
-            <Heart size={18} className="fill-purple-500/20" />
-          </Link>
-
-        </div>
       </nav>
 
       <MobileNavMenu

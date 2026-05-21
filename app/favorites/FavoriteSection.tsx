@@ -167,7 +167,7 @@ export function FavoriteSection() {
                 <div className="event-container grid min-h-[230px] grid-cols-1 items-center gap-10 py-12 lg:grid-cols-[1fr_360px]">
                     <div className="flex items-center gap-6">
                         <div className="hidden h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-violet-500/15 text-violet-400 shadow-[0_0_45px_rgba(124,58,237,0.25)] sm:flex">
-                            <Heart size={36} fill="currentColor" />
+                            <Trash2 size={36} fill="currentColor" />
                         </div>
 
                         <div>
@@ -322,10 +322,10 @@ export function FavoriteSection() {
                                                 event.stopPropagation();
                                                 removeFavorite(item.id);
                                             }}
-                                            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border border-pink-400/20 bg-pink-500/10 text-pink-400 transition-all duration-300 hover:scale-105 hover:bg-pink-500/20 hover:text-pink-300"
+                                            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border border-red-500/25 bg-red-500/10 text-red-500 transition-all duration-300 hover:scale-105 hover:bg-red-500/20 hover:text-red-400"
                                             title="Retirer des favoris"
                                         >
-                                            <Heart size={24} fill="currentColor" />
+                                            <Trash2 size={24} />
                                         </button>
                                     </div>
                                 </div>
