@@ -6,6 +6,7 @@ export type SpeakerSession = {
   title: string;
   description: string;
   type: string;
+  image?: string | null;
   startTime: string;
   endTime: string;
   capacity: number;
