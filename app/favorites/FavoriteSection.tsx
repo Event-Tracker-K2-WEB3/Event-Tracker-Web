@@ -1,23 +1,37 @@
 'use client';
 
 import Image from 'next/image';
-import { useMemo, useSyncExternalStore } from 'react';
-import { MapPin, Clock, Calendar, Trash2 } from 'lucide-react';
+import Link from 'next/link';
+import { useMemo, useState, useSyncExternalStore } from 'react';
+import { useRouter } from 'next/navigation';
+import {
+    CalendarHeart,
+    Clock,
+    Heart,
+    MapPin,
+    Trash2,
+} from 'lucide-react';
 
-interface FavoriteSession {
+interface FavoriteItem {
     id: string;
     title: string;
     event: string;
-    date: string;
-    dateDay: string;
-    dateMonth: string;
+    date?: string;
+    dateDay?: string;
+    dateMonth?: string;
+    dateYear?: string;
     startTime: string;
     endTime: string;
     room: string;
+    startDate?: string;
+    endDate?: string;
+    href?: string;
     imagePath?: string;
 }
 
 const FAVORITES_KEY = 'eventsync_favorites';
+
+type FilterType = 'all' | 'upcoming' | 'past';
 
 function subscribe(callback: () => void) {
     window.addEventListener('storage', callback);
@@ -32,20 +46,107 @@ function getServerSnapshot() {
     return '[]';
 }
 
+function getDateFromItem(item: FavoriteItem): Date | null {
+    if (item.endDate) {
+        return new Date(item.endDate);
+    }
+
+    if (item.startDate) {
+        return new Date(item.startDate);
+    }
+
+    return null;
+}
+
+function isPast(item: FavoriteItem): boolean {
+    const date = getDateFromItem(item);
+
+    if (!date || Number.isNaN(date.getTime())) {
+        return false;
+    }
+
+    return date < new Date();
+}
+
+function getDay(item: FavoriteItem): string {
+    if (item.dateDay) return item.dateDay;
+
+    if (item.startDate) {
+        return new Date(item.startDate).getDate().toString().padStart(2, '0');
+    }
+
+    if (item.date) {
+        return item.date.split(' ')[0] ?? '';
+    }
+
+    return '';
+}
+
+function getMonth(item: FavoriteItem): string {
+    if (item.dateMonth) return item.dateMonth;
+
+    if (item.startDate) {
+        return new Date(item.startDate)
+            .toLocaleDateString('fr-FR', { month: 'short' })
+            .replace('.', '')
+            .toUpperCase();
+    }
+
+    if (item.date) {
+        return item.date.split(' ')[1]?.replace('.', '').toUpperCase() ?? '';
+    }
+
+    return '';
+}
+
+function getYear(item: FavoriteItem): string {
+    if (item.dateYear) return item.dateYear;
+
+    if (item.startDate) {
+        return new Date(item.startDate).getFullYear().toString();
+    }
+
+    if (item.date) {
+        const parts = item.date.split(' ');
+        return parts[2] ?? '';
+    }
+
+    return '';
+}
+
 export function FavoriteSection() {
+    const router = useRouter();
+    const [activeFilter, setActiveFilter] = useState<FilterType>('all');
+
     const favoritesSnapshot = useSyncExternalStore(
         subscribe,
         getFavoritesSnapshot,
         getServerSnapshot
     );
 
-    const favorites = useMemo<FavoriteSession[]>(() => {
+    const favorites = useMemo<FavoriteItem[]>(() => {
         try {
-            return JSON.parse(favoritesSnapshot) as FavoriteSession[];
+            return JSON.parse(favoritesSnapshot) as FavoriteItem[];
         } catch {
             return [];
         }
     }, [favoritesSnapshot]);
+
+    const upcomingFavorites = useMemo(
+        () => favorites.filter((item) => !isPast(item)),
+        [favorites]
+    );
+
+    const pastFavorites = useMemo(
+        () => favorites.filter((item) => isPast(item)),
+        [favorites]
+    );
+
+    const visibleFavorites = useMemo(() => {
+        if (activeFilter === 'upcoming') return upcomingFavorites;
+        if (activeFilter === 'past') return pastFavorites;
+        return favorites;
+    }, [activeFilter, favorites, upcomingFavorites, pastFavorites]);
 
     const removeFavorite = (id: string) => {
         const updated = favorites.filter((item) => item.id !== id);
@@ -54,86 +155,229 @@ export function FavoriteSection() {
         window.dispatchEvent(new Event('storage'));
     };
 
-    if (favorites.length === 0) {
-        return (
-            <div className="max-w-5xl mx-auto">
-                <div className="text-center py-16 bg-event-surface/30 rounded-xl border border-event-border backdrop-blur-md">
-                    <Calendar size={28} className="mx-auto mb-4 text-event-primary" />
-                    <p className="text-event-muted text-sm">
-                        Aucun favori enregistré pour le moment.
-                    </p>
-                </div>
-            </div>
-        );
-    }
+    const clearFavorites = () => {
+        localStorage.setItem(FAVORITES_KEY, JSON.stringify([]));
+        window.dispatchEvent(new Event('storage'));
+    };
 
     return (
-        <div className="grid grid-cols-1 gap-5 max-w-5xl mx-auto">
-            {favorites.map((session) => (
-                <div
-                    key={session.id}
-                    className="group overflow-hidden rounded-2xl border border-white/10 bg-[#0b111d]/80 hover:bg-[#101827]/90 hover:border-event-primary/40 transition-all duration-300"
-                >
-                    <div className="flex flex-col md:flex-row">
-                        <div className="relative md:w-[260px] h-[170px] md:h-[150px] shrink-0 overflow-hidden bg-[#111827]">
-                            {session.imagePath ? (
-                                <Image
-                                    src={session.imagePath}
-                                    alt={session.title}
-                                    fill
-                                    className="object-cover opacity-85 group-hover:scale-105 transition-transform duration-500"
-                                />
-                            ) : (
-                                <div className="w-full h-full bg-gradient-to-br from-[#27145f] via-[#111827] to-[#050816]" />
-                            )}
-
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
-
-                            <div className="absolute left-4 top-4 w-[62px] rounded-xl border border-event-primary/70 bg-[#080b14]/85 backdrop-blur-md px-2 py-3 text-center shadow-[0_0_25px_rgba(124,58,237,0.35)]">
-                                <p className="text-2xl leading-none font-black text-white">
-                                    {session.dateDay}
-                                </p>
-
-                                <p className="mt-1 text-[10px] leading-none font-bold uppercase text-white/80">
-                                    {session.dateMonth}
-                                </p>
-                            </div>
+        <section className="w-full">
+            {/* HERO */}
+            <div className="border-b border-white/10 bg-[#050716]">
+                <div className="event-container grid min-h-[230px] grid-cols-1 items-center gap-10 py-12 lg:grid-cols-[1fr_360px]">
+                    <div className="flex items-center gap-6">
+                        <div className="hidden h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-violet-500/15 text-violet-400 shadow-[0_0_45px_rgba(124,58,237,0.25)] sm:flex">
+                            <Heart size={36} fill="currentColor" />
                         </div>
 
-                        <div className="flex-1 min-w-0 p-5 flex items-center justify-between gap-5">
-                            <div className="min-w-0">
-                                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-event-primary mb-2">
-                                    {session.event}
-                                </p>
+                        <div>
+                            <h1 className="text-4xl font-black tracking-tight text-white md:text-5xl">
+                                Mes <span className="text-event-primary-light">favoris</span>
+                            </h1>
 
-                                <h3 className="text-xl font-black text-white truncate group-hover:text-event-primary-light transition">
-                                    {session.title}
-                                </h3>
-
-                                <div className="flex flex-wrap items-center gap-x-8 gap-y-3 mt-5 text-sm text-gray-400">
-                                    <span className="flex items-center gap-2">
-                                        <Clock size={15} />
-                                        {session.startTime} - {session.endTime}
-                                    </span>
-
-                                    <span className="flex items-center gap-2">
-                                        <MapPin size={15} className="text-event-primary" />
-                                        {session.room}
-                                    </span>
-                                </div>
-                            </div>
-
-                            <button
-                                onClick={() => removeFavorite(session.id)}
-                                className="w-12 h-12 rounded-xl border border-red-500/20 bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 flex items-center justify-center transition-all duration-300 shrink-0 hover:scale-105"
-                                title="Supprimer des favoris"
-                            >
-                                <Trash2 size={21} strokeWidth={2.2} />
-                            </button>
+                            <p className="mt-4 max-w-xl text-base leading-7 text-event-muted">
+                                Retrouvez ici toutes les sessions que vous avez ajoutées à vos favoris.
+                            </p>
                         </div>
                     </div>
+
+                    <div className="relative hidden h-[170px] lg:block">
+                        <Image
+                            src="/favorisIMG.png"
+                            alt="Illustration favoris"
+                            fill
+                            className="object-contain"
+                            priority
+                        />
+                    </div>
                 </div>
-            ))}
+            </div>
+
+            {/* CONTENT */}
+            <div className="event-container py-8">
+                <div className="mb-6 flex flex-col justify-between gap-5 border-b border-white/10 pb-4 md:flex-row md:items-center">
+                    <div className="flex items-center gap-8">
+                        <button
+                            type="button"
+                            onClick={() => setActiveFilter('all')}
+                            className={`relative pb-4 text-sm font-semibold transition ${
+                                activeFilter === 'all'
+                                    ? 'text-event-primary-light'
+                                    : 'text-event-muted hover:text-white'
+                            }`}
+                        >
+                            Toutes ({favorites.length})
+                            {activeFilter === 'all' && (
+                                <span className="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-event-primary-light" />
+                            )}
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() => setActiveFilter('upcoming')}
+                            className={`relative pb-4 text-sm font-semibold transition ${
+                                activeFilter === 'upcoming'
+                                    ? 'text-event-primary-light'
+                                    : 'text-event-muted hover:text-white'
+                            }`}
+                        >
+                            À venir ({upcomingFavorites.length})
+                            {activeFilter === 'upcoming' && (
+                                <span className="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-event-primary-light" />
+                            )}
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() => setActiveFilter('past')}
+                            className={`relative pb-4 text-sm font-semibold transition ${
+                                activeFilter === 'past'
+                                    ? 'text-event-primary-light'
+                                    : 'text-event-muted hover:text-white'
+                            }`}
+                        >
+                            Passées ({pastFavorites.length})
+                            {activeFilter === 'past' && (
+                                <span className="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-event-primary-light" />
+                            )}
+                        </button>
+                    </div>
+
+                    {favorites.length > 0 && (
+                        <button
+                            type="button"
+                            onClick={clearFavorites}
+                            className="inline-flex w-fit items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-5 py-3 text-sm font-semibold text-event-muted transition hover:border-red-400/40 hover:bg-red-500/10 hover:text-red-300"
+                        >
+                            <Trash2 size={17} />
+                            Tout supprimer
+                        </button>
+                    )}
+                </div>
+
+                {visibleFavorites.length === 0 ? (
+                    <EmptyFavoriteState />
+                ) : (
+                    <div className="space-y-5">
+                        {visibleFavorites.map((item) => (
+                            <article
+                                key={item.id}
+                                onClick={() => router.push(item.href ?? `/events/${item.id}`)}
+                                className="group cursor-pointer overflow-hidden rounded-2xl border border-white/10 bg-[#0b111d]/80 transition-all duration-300 hover:border-event-primary/40 hover:bg-[#101827]/90"
+                            >
+                                <div className="flex flex-col md:flex-row">
+                                    <div className="relative h-[170px] shrink-0 overflow-hidden bg-[#111827] md:h-[170px] md:w-[360px]">
+                                        <Image
+                                            src={item.imagePath ?? '/home-ger.png'}
+                                            alt={item.title}
+                                            fill
+                                            className="object-cover opacity-85 transition-transform duration-500 group-hover:scale-105"
+                                        />
+
+                                        <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/10 to-transparent" />
+
+                                        <div className="absolute left-6 top-6 flex w-[86px] flex-col items-center justify-center rounded-xl border border-event-primary/80 bg-[#080b14]/85 px-3 py-4 text-center shadow-[0_0_25px_rgba(124,58,237,0.45)] backdrop-blur-md">
+                                            <span className="text-3xl font-black leading-none text-white">
+                                                {getDay(item)}
+                                            </span>
+
+                                            <span className="mt-1 text-sm font-bold uppercase leading-none text-white">
+                                                {getMonth(item)}
+                                            </span>
+
+                                            <span className="mt-1 text-xs font-medium leading-none text-white/70">
+                                                {getYear(item)}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex min-w-0 flex-1 items-center justify-between gap-6 p-7">
+                                        <div className="min-w-0">
+                                            <h3 className="text-xl font-black text-white transition group-hover:text-event-primary-light md:text-2xl">
+                                                {item.title}
+                                            </h3>
+
+                                            <p className="mt-2 text-base font-semibold text-event-primary-light">
+                                                {item.event}
+                                            </p>
+
+                                            <div className="mt-7 flex flex-wrap items-center gap-x-10 gap-y-3 text-sm text-event-muted">
+                                                <span className="flex items-center gap-2">
+                                                    <Clock size={17} />
+                                                    {item.startTime} - {item.endTime}
+                                                </span>
+
+                                                <span className="hidden h-7 w-px bg-white/10 sm:block" />
+
+                                                <span className="flex items-center gap-2">
+                                                    <MapPin size={17} className="text-event-primary" />
+                                                    {item.room}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <button
+                                            type="button"
+                                            onClick={(event) => {
+                                                event.stopPropagation();
+                                                removeFavorite(item.id);
+                                            }}
+                                            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border border-pink-400/20 bg-pink-500/10 text-pink-400 transition-all duration-300 hover:scale-105 hover:bg-pink-500/20 hover:text-pink-300"
+                                            title="Retirer des favoris"
+                                        >
+                                            <Heart size={24} fill="currentColor" />
+                                        </button>
+                                    </div>
+                                </div>
+                            </article>
+                        ))}
+
+                        <EmptyFavoriteCta />
+                    </div>
+                )}
+            </div>
+        </section>
+    );
+}
+
+function EmptyFavoriteState() {
+    return (
+        <div className="rounded-2xl border border-white/10 bg-[#0b111d]/70 px-6 py-20 text-center">
+            <CalendarHeart size={38} className="mx-auto mb-5 text-event-primary" />
+
+            <p className="text-event-muted">
+                Aucun favori trouvé dans cette catégorie.
+            </p>
+
+            <Link
+                href="/events"
+                className="mt-7 inline-flex items-center justify-center gap-3 rounded-xl border border-event-primary/70 px-7 py-3 text-sm font-semibold text-event-primary-light transition hover:bg-event-primary/10"
+            >
+                <CalendarHeart size={18} />
+                Voir le programme
+            </Link>
+        </div>
+    );
+}
+
+function EmptyFavoriteCta() {
+    return (
+        <div className="rounded-2xl border border-white/10 bg-[#07111f]/70 px-6 py-16 text-center">
+            <CalendarHeart size={38} className="mx-auto mb-5 text-event-primary" />
+
+            <p className="text-event-muted">
+                Vous n’avez pas encore ajouté de session en favori.
+                <br />
+                Parcourez le programme et ajoutez vos sessions préférées !
+            </p>
+
+            <Link
+                href="/events"
+                className="mt-7 inline-flex items-center justify-center gap-3 rounded-xl border border-event-primary/70 px-7 py-3 text-sm font-semibold text-event-primary-light transition hover:bg-event-primary/10"
+            >
+                <CalendarHeart size={18} />
+                Voir le programme
+            </Link>
         </div>
     );
 }
