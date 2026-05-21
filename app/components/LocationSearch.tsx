@@ -9,26 +9,21 @@ import {
     InputGroupInput
 } from "../components/ui/input-group";
 
-interface SearchBarProps {
-    initialValue?: string;
-}
-
-const SearchBar = ({ initialValue = '' }: SearchBarProps) => {
+const LocationSearch = () => {
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
-
-    const [value, setValue] = useState(initialValue);
+    const [value, setValue] = useState(searchParams.get('location') || '');
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
     const isInternalChange = useRef(false);
 
     useEffect(() => {
-        const urlQuery = searchParams.get('q') || '';
-        if (urlQuery !== value && !isInternalChange.current) {
-            setValue(urlQuery);
+        const urlLocation = searchParams.get('location') || '';
+        if (urlLocation !== value && !isInternalChange.current) {
+            setValue(urlLocation);
         }
         isInternalChange.current = false;
-    }, [value, searchParams]);
+    }, [searchParams, value]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newValue = e.target.value;
@@ -41,13 +36,13 @@ const SearchBar = ({ initialValue = '' }: SearchBarProps) => {
 
         timeoutRef.current = setTimeout(() => {
             const params = new URLSearchParams(searchParams.toString());
-
+            
             if (newValue) {
-                params.set('q', newValue);
+                params.set('location', newValue);
             } else {
-                params.delete('q');
+                params.delete('location');
             }
-
+            
             params.delete('page');
             router.push(`${pathname}?${params.toString()}`);
         }, 300);
@@ -55,8 +50,8 @@ const SearchBar = ({ initialValue = '' }: SearchBarProps) => {
 
     return (
         <InputGroup className="dark bg-background max-w-md rounded-md overflow-hidden border-border focus-within:border-event-primary focus-within:ring-1 focus-within:ring-event-primary/50 transition-all">
-            <InputGroupInput
-                placeholder="Rechercher un événement, un sujet, une ville..."
+            <InputGroupInput 
+                placeholder="Rechercher une ville..."
                 value={value}
                 onChange={handleChange}
             />
@@ -67,4 +62,4 @@ const SearchBar = ({ initialValue = '' }: SearchBarProps) => {
     );
 };
 
-export default SearchBar;
+export default LocationSearch;

@@ -38,6 +38,7 @@ export type SpeakerDetails = Speaker & {
 
 export async function getSpeakers(): Promise<Speaker[]> {
   const response = await fetch(`${API_BASE_URL}/speakers`, {
+
     cache: "no-store",
   });
 
