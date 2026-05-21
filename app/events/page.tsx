@@ -2,13 +2,14 @@ import { EventExplorer } from '../components/EventExplorer';
 import EventFilterBlock from '../components/EventFilterBlock';
 import { eventService } from '../services/eventService';
 
-export default async function EventsPage({ searchParams }: { searchParams: Promise<{ page?: string; q?: string; date?: string }> }) {
+export default async function EventsPage({ searchParams }: { searchParams: Promise<{ page?: string; q?: string; date?: string; }> }) {
   const params = await searchParams;
   const currentPage = params.page ? parseInt(params.page) : 1;
   const searchQuery = params.q || '';
   const dateFilter = params.date || 'all';
+  const locationFilter = params.location || '';
 
-  const events = await eventService.getAllEvents(currentPage, 8, searchQuery, dateFilter);
+  const events = await eventService.getAllEvents(currentPage, 8, searchQuery, dateFilter, locationFilter);
 
   return (
     <main className="h-auto lg:h-[calc(100vh-76px)] flex flex-col">

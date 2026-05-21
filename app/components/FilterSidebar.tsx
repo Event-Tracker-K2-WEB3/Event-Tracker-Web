@@ -1,6 +1,6 @@
-import SearchBar  from "./SearchBar"
 import { DateFilters } from "./DateFilters"
 import { MapPin, Calendar } from "lucide-react"
+import LocationSearch from "./LocationSearch"
 
 export const FilterSidebar = () => {
     return (
@@ -23,7 +23,7 @@ export const FilterSidebar = () => {
                         <MapPin className="text-event-primary" size={18} />
                         <h3 className="font-semibold text-sm tracking-wider">Lieu</h3>
                     </div>
-                    <SearchBar/>
+                    <LocationSearch />
                 
                 </section>
 
