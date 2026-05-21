@@ -5,6 +5,7 @@ import {
   type SessionDetails,
   type SessionSpeaker,
 } from "@/app/services/sessionService";
+import SessionQuestionsPanel from "@/app/components/SessionQuestionsPanel";
 
 type SessionDetailsPageProps = {
   params: Promise<{
@@ -336,7 +337,7 @@ export default async function SessionDetailsPage({
               </div>
             </div>
 
-            <QuestionsPanel session={session} />
+            <SessionQuestionsPanel sessionId={session.id} live={session.live} />
           </div>
         </div>
       </section>
