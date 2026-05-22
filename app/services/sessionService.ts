@@ -52,13 +52,27 @@ export interface Session {
   capacity: number | null;
 
   event?: SessionEvent;
-  room?: SessionRoom | null;
-  speaker?: SessionSpeaker | null;
-
   eventId?: string;
   eventTitle?: string;
+
+  room?: SessionRoom | null;
   roomId?: number;
   roomName?: string;
+
+  speaker?: SessionSpeaker | null;
+  speakers?: SessionSpeaker[];
+}
+
+export async function getAllSessions(): Promise<Session[]> {
+  const res = await fetch(`${API_BASE_URL}/sessions`, {
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    throw new Error(`Erreur récupération des sessions : ${res.status}`);
+  }
+
+  return res.json();
 }
 
 export async function getSessionsByEvent(eventId: string): Promise<Session[]> {
