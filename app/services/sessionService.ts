@@ -28,6 +28,51 @@ export type SessionDetails = {
   speakers: SessionSpeaker[];
 };
 
+export type SessionEvent = {
+  id: string;
+  title: string;
+  description: string;
+  startDate: string;
+  endDate: string;
+  location: string;
+};
+
+export type SessionRoom = {
+  id: number;
+  name: string;
+};
+
+export interface Session {
+  id: number;
+  title: string;
+  description: string;
+  startTime: string;
+  endTime: string;
+  type: string;
+  capacity: number | null;
+
+  event?: SessionEvent;
+  room?: SessionRoom | null;
+  speaker?: SessionSpeaker | null;
+
+  eventId?: string;
+  eventTitle?: string;
+  roomId?: number;
+  roomName?: string;
+}
+
+export async function getSessionsByEvent(eventId: string): Promise<Session[]> {
+  const response = await fetch(`${API_BASE_URL}/events/${eventId}/sessions`, {
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error(`Erreur récupération des sessions : ${response.status}`);
+  }
+
+  return response.json();
+}
+
 export async function getSessionById(id: string): Promise<SessionDetails> {
   const response = await fetch(`${API_BASE_URL}/sessions/${id}`, {
     cache: "no-store",

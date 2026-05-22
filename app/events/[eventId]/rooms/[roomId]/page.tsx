@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import RoomPlanningExplorer from "@/app/components/RoomPlanningExplorer";
 import { eventService } from "@/app/services/eventService";
 import { getRooms } from "@/app/services/roomService";
+import { getSessionsByEvent } from "@/app/services/sessionService";
 
 interface Props {
   params: Promise<{
@@ -21,9 +22,10 @@ export default async function RoomPlanningPage({ params }: Props) {
   }
 
   try {
-    const [event, rooms] = await Promise.all([
+    const [event, rooms, sessions] = await Promise.all([
       eventService.getEventById(eventId),
       getRooms(),
+      getSessionsByEvent(eventId),
     ]);
 
     const activeRoom = rooms.find((room) => room.id === roomIdNumeric);
@@ -32,8 +34,12 @@ export default async function RoomPlanningPage({ params }: Props) {
       notFound();
     }
 
-    const roomSessions = (activeRoom.sessions ?? [])
-      .filter((session) => session.event?.id === eventId)
+    const roomSessions = sessions
+      .filter((session) => {
+        const sessionRoomId = session.room?.id ?? session.roomId;
+        return sessionRoomId === roomIdNumeric;
+      })
+      .filter((session) => session.startTime && session.endTime)
       .sort(
         (a, b) =>
           new Date(a.startTime).getTime() -

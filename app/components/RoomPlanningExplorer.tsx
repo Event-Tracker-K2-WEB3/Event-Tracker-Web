@@ -12,13 +12,14 @@ import {
 } from "lucide-react";
 
 import type { Event } from "@/app/services/eventService";
-import type { Room, RoomSession } from "@/app/services/roomService";
+import type { Room } from "@/app/services/roomService";
+import type { Session } from "@/app/services/sessionService";
 
 interface RoomPlanningExplorerProps {
   event: Event;
   rooms: Room[];
   activeRoom: Room;
-  sessions: RoomSession[];
+  sessions: Session[];
 }
 
 type DayOption = {
@@ -26,9 +27,16 @@ type DayOption = {
   label: string;
 };
 
-function dateKey(dateValue: string | Date): string {
+function dateKey(dateValue?: string | Date | null): string {
+  if (!dateValue) {
+    return "";
+  }
+
   const date = typeof dateValue === "string" ? new Date(dateValue) : dateValue;
 
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
@@ -80,17 +88,35 @@ function getDefaultActiveDay(days: DayOption[]): string {
   return currentDay?.key ?? days[0]?.key ?? "";
 }
 
-function formatHour(dateString: string): string {
-  return new Date(dateString).toLocaleTimeString("fr-FR", {
+function formatHour(dateString?: string | null): string {
+  if (!dateString) {
+    return "--:--";
+  }
+
+  const date = new Date(dateString);
+
+  if (Number.isNaN(date.getTime())) {
+    return "--:--";
+  }
+
+  return date.toLocaleTimeString("fr-FR", {
     hour: "2-digit",
     minute: "2-digit",
   });
 }
 
-function isSessionLive(startTime: string, endTime: string): boolean {
+function isSessionLive(startTime?: string | null, endTime?: string | null): boolean {
+  if (!startTime || !endTime) {
+    return false;
+  }
+
   const now = new Date();
   const start = new Date(startTime);
   const end = new Date(endTime);
+
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+    return false;
+  }
 
   return now >= start && now <= end;
 }

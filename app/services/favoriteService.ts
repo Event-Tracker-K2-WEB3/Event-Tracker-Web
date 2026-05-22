@@ -1,6 +1,6 @@
 import type { Session } from "@/app/services/sessionService";
 
-export const FAVORITES_STORAGE_KEY = "eventsync:favorites";
+export const FAVORITES_STORAGE_KEY = "eventsync_favorites";
 
 export function getFavoriteSessions(): Session[] {
   if (typeof window === "undefined") {
