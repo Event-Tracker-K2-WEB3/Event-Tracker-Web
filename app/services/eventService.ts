@@ -20,6 +20,14 @@ export interface PaginatedResponse {
   empty: boolean;
 }
 
+export interface EventSpeaker {
+  id: number;
+  name: string;
+  role: string;
+  photo: string | null;
+  initials?: string;
+}
+
 export const eventService = {
   getAllEvents: async (page: number = 1, limit: number = 8, search?: string, date?: string, location?: string): Promise<PaginatedResponse> => {
     let url = `${API_BASE_URL}/events?page=${page}&size=${limit}`;
@@ -48,7 +56,7 @@ export const eventService = {
 
     return response.json();
   },
-  
+
   searchEvents: async (
     query: string,
     page: number = 1,
@@ -57,11 +65,20 @@ export const eventService = {
     const response = await fetch(
       `${API_BASE_URL}/events?page=${page}&size=${limit}&q=${encodeURIComponent(query)}`
     );
-  
+
     if (!response.ok) {
       throw new Error(`Erreur: ${response.status}`);
     }
-  
+
     return response.json();
   },
+
+  getSpeakersByEventId: async (eventId: string): Promise<EventSpeaker[]> => {
+    const response = await fetch(`${API_BASE_URL}/events/${eventId}/speakers`);
+    if (!response.ok) {
+      throw new Error(`Erreur: ${response.status}`);
+    }
+    return response.json();  // ← Doit correspondre à EventSpeaker
+  },
+
 };

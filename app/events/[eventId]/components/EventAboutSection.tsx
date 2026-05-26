@@ -4,7 +4,7 @@ interface EventAboutSectionProps {
 
 export const EventAboutSection = ({ about }: EventAboutSectionProps) => {
   return (
-    <section className="mt-5 sm:mt-6 rounded-xl border border-white/15 bg-[#0b1020]/72 p-3 sm:p-4 md:p-5 shadow-[0_18px_45px_rgba(0,0,0,0.22)] backdrop-blur-xl">
+    <section className="mt-5 mb-4 sm:mt-6 rounded-xl border border-white/15 bg-[#0b1020]/72 p-3 sm:p-4 md:p-5 shadow-[0_18px_45px_rgba(0,0,0,0.22)] backdrop-blur-xl">
       <div className="space-y-3">
         <div>
           <h2 className="text-lg sm:text-xl font-bold text-event-text">

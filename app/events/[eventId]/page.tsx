@@ -1,8 +1,10 @@
 import { notFound } from "next/navigation";
-import { eventService } from "@/app/services/eventService";
+import { eventService, EventSpeaker } from "@/app/services/eventService";
 import { BackButton } from "./components/BackButton";
 import { EventAboutSection } from "./components/EventAboutSection";
 import { EventHeroSection } from "./components/EventHeroSection";
+import { EventSpeakers } from "./components/EventSpeakers";
+
 
 function isEventLive(startDate: string, endDate: string): boolean {
   const now = new Date();
@@ -13,8 +15,10 @@ export default async function Page({ params }: { params: Promise<{ eventId: stri
   const { eventId } = await params;
 
   let event;
+  let speakers: EventSpeaker[] = [];
   try {
     event = await eventService.getEventById(eventId);
+    speakers = await eventService.getSpeakersByEventId(eventId);
   } catch {
     notFound();
   }
@@ -36,7 +40,7 @@ export default async function Page({ params }: { params: Promise<{ eventId: stri
         />
 
         <EventAboutSection  about={event.description} />
-
+        <EventSpeakers speakers={speakers}/>
       </div>
     </main>
   );
