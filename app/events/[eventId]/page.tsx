@@ -4,6 +4,7 @@ import { BackButton } from "./components/BackButton";
 import { EventAboutSection } from "./components/EventAboutSection";
 import { EventHeroSection } from "./components/EventHeroSection";
 import { EventSpeakers } from "./components/EventSpeakers";
+import { EventSessions } from "./components/EventSessions";
 
 
 function isEventLive(startDate: string, endDate: string): boolean {
@@ -16,9 +17,12 @@ export default async function Page({ params }: { params: Promise<{ eventId: stri
 
   let event;
   let speakers: EventSpeaker[] = [];
+  let sessions = [];
+
   try {
     event = await eventService.getEventById(eventId);
     speakers = await eventService.getSpeakersByEventId(eventId);
+    sessions = await eventService.getSessionsByEventId(eventId);
   } catch {
     notFound();
   }
@@ -41,6 +45,7 @@ export default async function Page({ params }: { params: Promise<{ eventId: stri
 
         <EventAboutSection  about={event.description} />
         <EventSpeakers speakers={speakers}/>
+        <EventSessions sessions={sessions} eventId={eventId} />
       </div>
     </main>
   );

@@ -28,6 +28,16 @@ export interface EventSpeaker {
   initials?: string;
 }
 
+export interface EventSession {
+  id: number;
+  title: string;
+  description: string;
+  startTime: string;
+  endTime: string;
+  roomId: number | null;
+  roomName: string | null;
+}
+
 export const eventService = {
   getAllEvents: async (page: number = 1, limit: number = 8, search?: string, date?: string, location?: string): Promise<PaginatedResponse> => {
     let url = `${API_BASE_URL}/events?page=${page}&size=${limit}`;
@@ -79,6 +89,18 @@ export const eventService = {
       throw new Error(`Erreur: ${response.status}`);
     }
     return response.json();  // ← Doit correspondre à EventSpeaker
+  },
+
+  getSessionsByEventId: async (eventId: string): Promise<EventSession[]> => {
+    const response = await fetch(`${API_BASE_URL}/events/${eventId}/sessions`, {
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch event sessions: ${response.status}`);
+    }
+
+    return response.json();
   },
 
 };
