@@ -63,6 +63,18 @@ export interface Session {
   speakers?: SessionSpeaker[];
 }
 
+export async function getSessionsByRoom(roomId: number): Promise<Session[]> {
+  const response = await fetch(`${API_BASE_URL}/sessions/room/${roomId}`, {
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error(`Erreur récupération des sessions de la salle : ${response.status}`);
+  }
+
+  return response.json();
+}
+
 export async function getAllSessions(): Promise<Session[]> {
   const res = await fetch(`${API_BASE_URL}/sessions`, {
     cache: "no-store",
