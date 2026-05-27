@@ -97,22 +97,6 @@ function FileIcon() {
   );
 }
 
-function MessageIcon() {
-  return (
-    <svg className="h-6 w-6 text-violet-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z" />
-    </svg>
-  );
-}
-
-function ArrowRightIcon() {
-  return (
-    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <line x1="5" y1="12" x2="19" y2="12" />
-      <polyline points="12 5 19 12 12 19" />
-    </svg>
-  );
-}
 
 function InfoRow({
   icon,
@@ -165,53 +149,6 @@ function SpeakerPill({ speaker }: { speaker: SessionSpeaker }) {
   );
 }
 
-function QuestionsPanel({ session }: { session: SessionDetails }) {
-  return (
-    <aside className="rounded-3xl border border-white/10 bg-[#0b1020]/80 p-6 shadow-[0_0_45px_rgba(15,23,42,0.45)]">
-      <div className="mb-7 flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <MessageIcon />
-          <h2 className="text-xl font-bold text-white">Questions en direct</h2>
-        </div>
-
-        <span className="rounded-full bg-violet-600/20 px-4 py-2 text-sm font-semibold text-violet-200">
-          {session.live ? "Live" : "À venir"}
-        </span>
-      </div>
-
-      {session.live ? (
-        <>
-          <textarea
-            placeholder="Posez votre question..."
-            className="min-h-28 w-full resize-none rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-sm text-white outline-none transition placeholder:text-white/35 focus:border-violet-400/60"
-          />
-
-          <div className="mt-3 grid gap-3 md:grid-cols-[1fr_130px]">
-            <input
-              placeholder="Votre nom (optionnel)"
-              className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/35 focus:border-violet-400/60"
-            />
-
-            <button className="rounded-2xl bg-violet-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-violet-500">
-              Envoyer
-            </button>
-          </div>
-
-          <div className="mt-8 border-t border-white/10 pt-6">
-            <p className="text-sm text-white/45">
-              Les questions seront affichées ici après connexion du module Q/R.
-            </p>
-          </div>
-        </>
-      ) : (
-        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 text-sm leading-7 text-white/55">
-          La section questions sera disponible uniquement lorsque cette session sera en direct.
-        </div>
-      )}
-    </aside>
-  );
-}
-
 export default async function SessionDetailsPage({
   params,
 }: SessionDetailsPageProps) {
@@ -232,7 +169,7 @@ export default async function SessionDetailsPage({
       <section className="relative overflow-hidden px-6 py-10">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(124,58,237,0.18),transparent_35%),radial-gradient(circle_at_top_right,rgba(59,130,246,0.10),transparent_30%)]" />
 
-        <div className="relative mx-auto max-w-7xl">
+        <div className="relative mx-auto max-w-7xl animate-fade-up">
           <nav className="mb-8 flex flex-wrap items-center gap-3 text-sm text-white/50">
             <Link href="/" className="transition hover:text-white">Accueil</Link>
             <span>›</span>
@@ -246,23 +183,23 @@ export default async function SessionDetailsPage({
           </nav>
 
           <div className="grid gap-6 xl:grid-cols-[1.65fr_1fr]">
-            <div className="rounded-3xl border border-white/10 bg-[#0b1020]/80 p-6 shadow-[0_0_45px_rgba(15,23,42,0.45)]">
+            <div className="premium-card-hover animate-fade-up animation-delay-100 rounded-3xl border border-white/10 bg-[#0b1020]/80 p-6 shadow-[0_0_45px_rgba(15,23,42,0.45)]">
               <div className="grid gap-8 lg:grid-cols-[1fr_340px] lg:items-start">
                 <div>
                   <div className="mb-8 flex flex-wrap items-center gap-4">
                     <span
-                      className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold ${
-                        session.live
-                          ? "bg-emerald-500/15 text-emerald-300"
-                          : "bg-violet-500/15 text-violet-200"
-                      }`}
-                    >
-                      <span
-                        className={`h-2 w-2 rounded-full ${
-                          session.live ? "bg-emerald-400" : "bg-violet-400"
+                        className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold ${
+                            session.live
+                                ? "animate-soft-pulse bg-emerald-500/15 text-emerald-300"
+                                : "bg-violet-500/15 text-violet-200"
                         }`}
+                    >
+                    <span
+                          className={`h-2 w-2 rounded-full ${
+                              session.live ? "bg-emerald-400" : "bg-violet-400"
+                          }`}
                       />
-                      {session.live ? "EN COURS" : session.type}
+                                          {session.live ? "EN COURS" : session.type}
                     </span>
 
                     <span className="text-sm text-white/65">
@@ -279,12 +216,12 @@ export default async function SessionDetailsPage({
                   </p>
                 </div>
 
-                <div className="h-56 overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-violet-900 via-indigo-900 to-fuchsia-900">
+                <div className="animate-scale-in animation-delay-200 h-56 overflow-hidden rounded-2xl border border-violet-400/30 bg-gradient-to-br from-violet-900 via-indigo-900 to-fuchsia-900 shadow-[0_0_35px_rgba(124,58,237,0.18)]">
                   {sessionImage ? (
                     <img
                       src={sessionImage}
                       alt={session.title}
-                      className="h-full w-full object-cover"
+                      className="h-full w-full object-cover transition duration-700 hover:scale-105"
                     />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center text-xs font-bold uppercase tracking-[0.3em] text-white/45">
@@ -294,7 +231,7 @@ export default async function SessionDetailsPage({
                 </div>
               </div>
 
-              <div className="mt-8 rounded-3xl border border-white/10 bg-white/[0.03] px-6">
+              <div className="animate-fade-up animation-delay-300 mt-8 rounded-3xl border border-white/10 bg-white/[0.03] px-6">
                 <InfoRow
                   icon={<CalendarIcon />}
                   label="Date"

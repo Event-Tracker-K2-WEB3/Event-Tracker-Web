@@ -84,7 +84,7 @@ export default function SpeakerSessionRow({
   session: SpeakerSession;
 }) {
   return (
-    <article className="group overflow-hidden rounded-2xl border border-white/10 bg-[#0b1020]/80 transition-all duration-300 hover:-translate-y-1 hover:border-violet-400/50 hover:bg-[#10172a]/90 hover:shadow-[0_0_35px_rgba(124,58,237,0.18)]">
+    <article className="group premium-card-hover overflow-hidden rounded-2xl border border-white/10 bg-[#0b1020]/80 transition-all duration-300 hover:-translate-y-1 hover:border-violet-400/50 hover:bg-[#10172a]/90 hover:shadow-[0_0_35px_rgba(124,58,237,0.18)]">
       <div className="flex flex-col gap-4 p-3 md:flex-row md:items-center md:justify-between">
         <div className="flex flex-col gap-4 md:flex-row md:items-center">
           <div className="h-24 w-full shrink-0 overflow-hidden rounded-xl border border-white/10 bg-gradient-to-br from-violet-900 via-indigo-900 to-fuchsia-900 md:w-44">
