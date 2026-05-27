@@ -177,7 +177,7 @@ function SpeakerSessionRow({ session }: { session: SpeakerSession }) {
   const sessionImageSource = getSessionImageSource(session.image);
 
   return (
-    <article className="group overflow-hidden rounded-2xl border border-white/10 bg-[#0b1020]/80 transition-all duration-300 hover:-translate-y-1 hover:border-violet-400/50 hover:bg-[#10172a]/90 hover:shadow-[0_0_35px_rgba(124,58,237,0.18)]">
+    <article className="group premium-card-hover overflow-hidden rounded-2xl border border-white/10 bg-[#0b1020]/80 transition-all duration-300 hover:border-violet-400/50 hover:bg-[#10172a]/90">
       <div className="flex flex-col gap-4 p-3 md:flex-row md:items-center md:justify-between">
         <div className="flex flex-col gap-4 md:flex-row md:items-center">
           <div className="h-24 w-full shrink-0 overflow-hidden rounded-xl border border-white/10 bg-gradient-to-br from-violet-900 via-indigo-900 to-fuchsia-900 md:w-44">
@@ -257,7 +257,7 @@ export default async function SpeakerDetailsPage({
       <section className="relative overflow-hidden px-6 py-12">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(124,58,237,0.18),transparent_35%)]" />
 
-        <div className="relative mx-auto max-w-7xl">
+        <div className="relative mx-auto max-w-7xl animate-fade-up">
           <Link
             href="/speakers"
             className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-2 text-sm text-white/70 transition hover:border-violet-400/50 hover:text-violet-200"
@@ -266,12 +266,12 @@ export default async function SpeakerDetailsPage({
           </Link>
 
           <div className="mt-8 grid gap-10 border-b border-white/10 pb-10 lg:grid-cols-[320px_1fr] lg:items-center">
-            <div className="h-[340px] overflow-hidden rounded-3xl border border-violet-500/50 bg-gradient-to-br from-violet-700 via-indigo-700 to-fuchsia-700 shadow-[0_0_45px_rgba(124,58,237,0.25)]">
+            <div className="animate-scale-in animation-delay-100 h-[340px] overflow-hidden rounded-3xl border border-violet-500/50 bg-gradient-to-br from-violet-700 via-indigo-700 to-fuchsia-700 shadow-[0_0_45px_rgba(124,58,237,0.25)]">
               {photoSource ? (
                 <img
                   src={photoSource}
                   alt={speaker.name}
-                  className="h-full w-full object-cover"
+                  className="h-full w-full object-cover transition duration-700 hover:scale-105"
                 />
               ) : (
                 <div className="flex h-full w-full items-center justify-center text-6xl font-bold text-white">
@@ -280,7 +280,7 @@ export default async function SpeakerDetailsPage({
               )}
             </div>
 
-            <div>
+            <div className="animate-fade-up animation-delay-200">
               <p className="text-sm font-bold uppercase tracking-[0.45em] text-violet-300">
                 Intervenant
               </p>
@@ -315,7 +315,7 @@ export default async function SpeakerDetailsPage({
             </div>
           </div>
 
-          <section id="sessions" className="mt-9">
+          <section id="sessions" className="animate-fade-up animation-delay-300 mt-9">
             <div className="mb-6">
               <h2 className="text-2xl font-bold text-white">
                 Sessions avec cet intervenant
