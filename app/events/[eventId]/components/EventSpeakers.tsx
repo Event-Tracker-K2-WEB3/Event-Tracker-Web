@@ -39,7 +39,7 @@ export const EventSpeakers = ({ speakers }: EventSpeakersProps) => {
                 </Link>
             </div>
 
-            <div className="flex gap-3 overflow-x-auto scroll-smooth pb-2 pr-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div className="flex gap-3 overflow-x-auto scroll-smooth pb-2 pr-2">
                 {speakers.map((speaker) => (
                     <EventSpeakerCard key={speaker.id} speaker={speaker} />
                 ))}
