@@ -84,7 +84,7 @@ export default function SpeakerSessionRow({
   session: SpeakerSession;
 }) {
   return (
-    <article className="group overflow-hidden rounded-2xl border border-white/10 bg-[#0b1020]/80 transition-all duration-300 hover:-translate-y-1 hover:border-violet-400/50 hover:bg-[#10172a]/90 hover:shadow-[0_0_35px_rgba(124,58,237,0.18)]">
+    <article className="group premium-card-hover overflow-hidden rounded-2xl border border-white/10 bg-[#0b1020]/80 transition-all duration-300 hover:border-violet-400/50 hover:bg-[#10172a]/90">
       <div className="flex flex-col gap-4 p-3 md:flex-row md:items-center md:justify-between">
         <div className="flex flex-col gap-4 md:flex-row md:items-center">
           <div className="h-24 w-full shrink-0 overflow-hidden rounded-xl border border-white/10 bg-gradient-to-br from-violet-900 via-indigo-900 to-fuchsia-900 md:w-44">
@@ -134,7 +134,7 @@ export default function SpeakerSessionRow({
 
         <Link
           href={`/sessions/${session.id}`}
-          className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-violet-400/50 px-6 py-3 text-sm font-semibold text-violet-200 transition hover:bg-violet-600 hover:text-white md:min-w-[160px]"
+          className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-violet-400/50 px-6 py-3 text-sm font-semibold text-violet-200 transition hover:-translate-y-0.5 hover:bg-violet-600 hover:text-white hover:shadow-[0_0_25px_rgba(124,58,237,0.35)] md:min-w-[160px]"
         >
           Voir la session
           <ArrowRightIcon />
