@@ -12,7 +12,7 @@ export const EventSpeakerCard = ({ speaker }: EventSpeakerCardProps) => {
   return (
     <Link
       href={`/speakers/${speaker.id}`}
-      aria-label={`Voir le profil de ${speaker.name}`}
+      aria-label={`View the profile of ${speaker.name}`}
       className="group relative z-0 block h-[92px] w-[300px] shrink-0 rounded-xl border border-white/10 bg-[#0b1020]/72 p-3 shadow-[0_14px_35px_rgba(0,0,0,0.18)] transition hover:z-10 hover:border-event-primary/45 hover:bg-[#11182a]/85"
     >
       <article className="flex h-full items-center gap-3">
@@ -29,7 +29,7 @@ export const EventSpeakerCard = ({ speaker }: EventSpeakerCardProps) => {
 
           <span className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-event-primary transition group-hover:text-event-primary-light">
             <ShieldCheck size={12} />
-            Voir le profil
+            View profile
           </span>
         </div>
       </article>

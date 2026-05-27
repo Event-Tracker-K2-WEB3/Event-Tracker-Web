@@ -8,7 +8,7 @@ export const EventAboutSection = ({ about }: EventAboutSectionProps) => {
       <div className="space-y-3">
         <div>
           <h2 className="text-lg sm:text-xl font-bold text-event-text">
-            À propos de l&apos;événement
+            About the event
           </h2>
 
           <div className="mt-1.5 h-0.5 w-10 rounded-full bg-event-primary" />
@@ -16,7 +16,7 @@ export const EventAboutSection = ({ about }: EventAboutSectionProps) => {
 
         <div className="rounded-lg border border-white/15 bg-[#09101f]/78 p-3 sm:p-4">
           <p className="text-sm sm:text-[15px] leading-6 text-white/82">
-            {about || "Aucune description disponible pour cet événement."}
+            {about || "No description available for this event."}
           </p>
         </div>
       </div>

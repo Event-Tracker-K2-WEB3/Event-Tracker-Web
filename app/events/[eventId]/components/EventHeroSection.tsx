@@ -15,14 +15,14 @@ function formatDateRange(startDateStr: string, endDateStr: string): string {
 
     const startDay = start.getDate();
     const endDay = end.getDate();
-    const month = start.toLocaleDateString('fr-FR', { month: 'long' });
+    const month = start.toLocaleDateString('en-US', { month: 'long' });
     const year = start.getFullYear();
 
     return `${startDay} - ${endDay} ${month} ${year}`;
 }
 
 function formatTime(dateString: string): string {
-    return new Date(dateString).toLocaleTimeString('fr-FR', {
+    return new Date(dateString).toLocaleTimeString('en-US', {
         hour: '2-digit',
         minute: '2-digit'
     });
@@ -58,7 +58,7 @@ export const EventHeroSection = ({ title, isLive, startDate, endDate, location, 
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                             <span className="relative inline-flex rounded-full h-2 w-2 bg-green-400"></span>
                         </span>
-                        EN COURS
+                        LIVE
                     </div>
                 )}
             </div>
@@ -85,7 +85,7 @@ export const EventHeroSection = ({ title, isLive, startDate, endDate, location, 
                     <div className="flex items-center gap-3">
                         <Clock className="text-event-primary shrink-0" size={22} />
                         <div>
-                            <p className="text-event-muted text-xs sm:text-sm mb-1">HEURE</p>
+                            <p className="text-event-muted text-xs sm:text-sm mb-1">TIME</p>
                             <p className="text-event-text font-semibold text-sm sm:text-base">{formatTime(startDate)} - {formatTime(endDate)}</p>
                         </div>
                     </div>
@@ -95,7 +95,7 @@ export const EventHeroSection = ({ title, isLive, startDate, endDate, location, 
                     <div className="flex items-center gap-3">
                         <MapPin className="text-event-primary shrink-0" size={22} />
                         <div>
-                            <p className="text-event-muted text-xs sm:text-sm mb-1">LIEU</p>
+                            <p className="text-event-muted text-xs sm:text-sm mb-1">LOCATION</p>
                             <p className="text-event-text font-semibold text-sm sm:text-base">{location}</p>
                         </div>
                     </div>

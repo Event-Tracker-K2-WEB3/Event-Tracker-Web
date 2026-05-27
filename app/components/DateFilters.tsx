@@ -5,10 +5,10 @@ import { RadioGroup, RadioGroupItem } from "../components/ui/radio-group"
 import { useRouter, useSearchParams } from "next/dist/client/components/navigation";
 
 const DATE_OPTIONS = [
-    { id: "all", label: "Tous" },
-    { id: "today", label: "Aujourd'hui" },
-    { id: "week", label: "Cette semaine" },
-    { id: "month", label: "Ce mois-ci" },
+    { id: "all", label: "All" },
+    { id: "today", label: "Today" },
+    { id: "week", label: "This week" },
+    { id: "month", label: "This month" },
 ] as const;
 
 export const DateFilters: React.FC = () => {

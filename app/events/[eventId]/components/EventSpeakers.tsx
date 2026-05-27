@@ -24,7 +24,7 @@ export const EventSpeakers = ({ speakers }: EventSpeakersProps) => {
                         id="event-speakers-title"
                         className="text-lg sm:text-xl font-bold text-event-text"
                     >
-                        Intervenants
+                        Event Speakers
                     </h2>
 
                     <div className="mt-1.5 h-0.5 w-10 rounded-full bg-event-primary" />
@@ -35,7 +35,7 @@ export const EventSpeakers = ({ speakers }: EventSpeakersProps) => {
                     className="inline-flex w-fit items-center justify-center gap-2 rounded-lg border border-event-primary/50 px-3 py-2 text-xs font-semibold text-event-primary transition hover:bg-event-primary/10 hover:text-event-primary-light"
                 >
                     <UsersRound size={14} />
-                    Voir tous les intervenants
+                    View all speakers
                 </Link>
             </div>
 

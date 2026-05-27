@@ -8,7 +8,7 @@ export const BackButton = () => {
             className="text-event-muted hover:text-event-primary transition m-6 inline-flex items-center gap-2"
         >
             <ArrowLeft size={16} />
-            <span>Retour aux événements</span>
+            <span>Back to events</span>
         </Link>
     );
 };

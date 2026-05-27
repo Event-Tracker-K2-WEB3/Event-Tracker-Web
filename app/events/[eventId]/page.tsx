@@ -43,8 +43,8 @@ export default async function Page({ params }: { params: Promise<{ eventId: stri
           location={event.location}
         />
 
-        <EventAboutSection  about={event.description} />
-        <EventSpeakers speakers={speakers}/>
+        <EventAboutSection about={event.description} />
+        <EventSpeakers speakers={speakers} />
         <EventSessions sessions={sessions} eventId={eventId} />
       </div>
     </main>

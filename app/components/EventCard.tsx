@@ -8,7 +8,7 @@ function formatDay(dateString: string): string {
 }
 
 function formatMonth(dateString: string): string {
-  return new Date(dateString).toLocaleDateString('fr-FR', { month: 'short' }).toUpperCase();
+  return new Date(dateString).toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
 }
 
 function formatDateRange(startDateStr: string, endDateStr: string): string {
@@ -17,14 +17,14 @@ function formatDateRange(startDateStr: string, endDateStr: string): string {
 
   const startDay = start.getDate();
   const endDay = end.getDate();
-  const month = start.toLocaleDateString('fr-FR', { month: 'long' });
+  const month = start.toLocaleDateString('en-US', { month: 'long' });
   const year = start.getFullYear();
 
   if (start.getMonth() === end.getMonth() && start.getFullYear() === end.getFullYear()) {
     return `${startDay} - ${endDay} ${month} ${year}`;
   }
 
-  const endMonth = end.toLocaleDateString('fr-FR', { month: 'long' });
+  const endMonth = end.toLocaleDateString('en-US', { month: 'long' });
   return `${startDay} ${month} - ${endDay} ${endMonth} ${year}`;
 }
 
@@ -67,7 +67,7 @@ export function EventCard({ event }: { event: Event }) {
       </div>
 
       <div className="p-3 space-y-1.5">
-        {/* Titre - plus petit */}
+        
         <h3 className="text-sm font-bold text-event-text group-hover:text-event-primary transition-colors line-clamp-1">
           {event.title}
         </h3>

@@ -40,7 +40,7 @@ export const EventSessions = ({ sessions, eventId }: EventSessionsProps) => {
                         className="inline-flex items-center justify-center gap-2 rounded-lg border border-event-primary/50 px-4 py-2 text-xs font-semibold text-event-primary transition hover:bg-event-primary/10 hover:text-event-primary-light"
                     >
                         <CalendarDays size={14} />
-                        Voir le programme complet
+                        View the complete program
                     </Link>
                 </div>
             </div>
