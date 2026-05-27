@@ -193,14 +193,14 @@ export default function SpeakerCard({ speaker, index }: SpeakerCardProps) {
                 href={`/speakers/${speaker.id}`}
                 className="rounded-lg border border-violet-500/60 px-3 py-2 text-center text-xs font-semibold text-white transition hover:bg-violet-600"
               >
-                Voir le profil
+                View profile
               </Link>
 
               <Link
                 href={`/speakers/${speaker.id}#sessions`}
                 className="rounded-lg bg-violet-700/70 px-3 py-2 text-center text-xs font-semibold text-white transition hover:bg-violet-600"
               >
-                Voir les sessions
+                View sessions
               </Link>
             </div>
           </div>

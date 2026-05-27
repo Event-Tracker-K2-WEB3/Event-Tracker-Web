@@ -35,11 +35,11 @@ function dateKey(dateValue: string | Date): string {
 }
 
 function formatPlanningDay(date: Date): string {
-  const day = date.toLocaleDateString("fr-FR", {
+  const day = date.toLocaleDateString("en-US", {
     day: "numeric",
   });
 
-  const month = date.toLocaleDateString("fr-FR", {
+  const month = date.toLocaleDateString("en-US", {
     month: "long",
   });
 
@@ -76,7 +76,7 @@ function getDefaultDay(days: DayOption[]): string {
 }
 
 function formatHour(dateString: string): string {
-  return new Date(dateString).toLocaleTimeString("fr-FR", {
+  return new Date(dateString).toLocaleTimeString("en-US", {
     hour: "2-digit",
     minute: "2-digit",
   });
@@ -86,18 +86,18 @@ function formatEventDateRange(startDate: string, endDate: string): string {
   const start = new Date(startDate);
   const end = new Date(endDate);
 
-  const startDay = start.toLocaleDateString("fr-FR", {
+  const startDay = start.toLocaleDateString("en-US", {
     day: "numeric",
     month: "long",
   });
 
-  const endDay = end.toLocaleDateString("fr-FR", {
+  const endDay = end.toLocaleDateString("en-US", {
     day: "numeric",
     month: "long",
     year: "numeric",
   });
 
-  return `${startDay} au ${endDay}`;
+  return `${startDay} to ${endDay}`;
 }
 
 function isSessionLive(startTime: string, endTime: string): boolean {
@@ -199,15 +199,15 @@ export default function GlobalPlanningExplorer({
           <div className="max-w-[760px]">
             <div className="mb-5 inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/[0.03] px-3 py-1.5 text-[12px] font-bold uppercase tracking-[0.03em] text-slate-200">
               <CalendarDays size={15} />
-              Planning global
+              Global schedule
             </div>
 
             <h1 className="text-[42px] font-extrabold leading-none tracking-[-0.04em] text-white md:text-[56px]">
-              Planning global
+              Global schedule
             </h1>
 
             <p className="mt-4 max-w-[720px] text-[16px] leading-7 text-slate-300">
-              Découvrez le programme global du {event.title}, du{" "}
+              Explore the full program of {event.title}, from{" "}
               {formatEventDateRange(event.startDate, event.endDate)}.
             </p>
           </div>
@@ -216,7 +216,7 @@ export default function GlobalPlanningExplorer({
 
       {/* FILTRES + TABLEAU */}
       <section className="event-container py-5">
-        {/* FILTRES */}
+        {/* FILTERS */}
         <div className="mb-6 flex flex-col gap-4 xl:flex-row xl:items-center">
           {/* Dates */}
           <div className="inline-flex w-fit overflow-hidden rounded-xl border border-white/15 bg-white/[0.03]">
@@ -254,7 +254,7 @@ export default function GlobalPlanningExplorer({
               className="h-[52px] w-full appearance-none rounded-xl border border-white/15 bg-white/[0.04] pl-14 pr-12 text-[15px] font-medium text-white outline-none transition hover:border-violet-400/50 focus:border-violet-400/70"
             >
               <option value="all" className="bg-[#0b1120] text-white">
-                Toutes les salles
+                All rooms
               </option>
 
               {rooms.map((room) => (
@@ -275,7 +275,7 @@ export default function GlobalPlanningExplorer({
           </div>
         </div>
 
-        {/* TABLEAU PLANNING */}
+        {/* SCHEDULE TABLE */}
         <div className="overflow-x-auto rounded-[22px] border border-white/20 bg-[#081120]/90 shadow-[0_24px_70px_rgba(0,0,0,0.28)]">
           <div
             className="min-w-[1100px]"
@@ -291,7 +291,7 @@ export default function GlobalPlanningExplorer({
               }}
             >
               <div className="flex h-[58px] items-center justify-center border-r border-white/15 text-[14px] text-slate-300">
-                Heure
+                Time
               </div>
 
               {visibleRooms.map((room) => (
@@ -314,12 +314,12 @@ export default function GlobalPlanningExplorer({
                   gridTemplateColumns: `145px repeat(${visibleRooms.length}, minmax(300px, 1fr))`,
                 }}
               >
-                {/* Heure */}
+                {/* Time */}
                 <div className="flex items-start justify-center border-r border-white/15 pt-5 text-[14px] text-slate-300">
                   {hour}
                 </div>
 
-                {/* Colonnes salles */}
+                {/* Room columns */}
                 {visibleRooms.map((room) => {
                   const roomSessions = getSessionsForRoomAndHour(
                     filteredSessions,
@@ -371,7 +371,7 @@ export default function GlobalPlanningExplorer({
                                 <span className="inline-flex items-center gap-2">
                                   <UserRound size={15} />
                                   {session.speaker?.name ??
-                                    "Intervenant à confirmer"}
+                                    "Speaker to be confirmed"}
                                 </span>
                               </div>
                             </article>
@@ -384,17 +384,17 @@ export default function GlobalPlanningExplorer({
               </div>
             ))}
 
-            {/* Footer légende */}
+            {/* Footer legend */}
             <div className="flex items-center justify-center gap-8 border-t border-white/10 py-4 text-[14px] text-slate-300">
               <div className="flex items-center gap-2">
                 <span className="h-3.5 w-3.5 rounded-full bg-[#ff445c]" />
                 <span className="font-semibold text-[#ff5c72]">LIVE</span>
-                <span>Session en cours</span>
+                <span>Current session</span>
               </div>
 
               <div className="flex items-center gap-2">
                 <span className="h-3.5 w-3.5 rounded-full bg-violet-500" />
-                <span>À venir</span>
+                <span>Upcoming</span>
               </div>
             </div>
           </div>
@@ -402,7 +402,7 @@ export default function GlobalPlanningExplorer({
 
         {filteredSessions.length === 0 && (
           <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.03] px-6 py-8 text-center text-slate-300">
-            Aucune session disponible pour ce jour et cette salle.
+            No session available for this day and room.
           </div>
         )}
       </section>

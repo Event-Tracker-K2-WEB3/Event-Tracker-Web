@@ -14,7 +14,7 @@ type SessionDetailsPageProps = {
 };
 
 function formatDate(value: string) {
-  return new Intl.DateTimeFormat("fr-FR", {
+  return new Intl.DateTimeFormat("en-US", {
     day: "2-digit",
     month: "long",
     year: "numeric",
@@ -22,7 +22,7 @@ function formatDate(value: string) {
 }
 
 function formatTime(value: string) {
-  return new Intl.DateTimeFormat("fr-FR", {
+  return new Intl.DateTimeFormat("en-US", {
     hour: "2-digit",
     minute: "2-digit",
   }).format(new Date(value));
@@ -171,9 +171,9 @@ export default async function SessionDetailsPage({
 
         <div className="relative mx-auto max-w-7xl animate-fade-up">
           <nav className="mb-8 flex flex-wrap items-center gap-3 text-sm text-white/50">
-            <Link href="/" className="transition hover:text-white">Accueil</Link>
+            <Link href="/" className="transition hover:text-white">Home</Link>
             <span>›</span>
-            <Link href="/events" className="transition hover:text-white">Événements</Link>
+            <Link href="/events" className="transition hover:text-white">Events</Link>
             <span>›</span>
             <Link href={`/events/${session.eventId}`} className="transition hover:text-white">
               {session.eventTitle}
@@ -199,11 +199,11 @@ export default async function SessionDetailsPage({
                               session.live ? "bg-emerald-400" : "bg-violet-400"
                           }`}
                       />
-                                          {session.live ? "EN COURS" : session.type}
+                                          {session.live ? "LIVE" : session.type}
                     </span>
 
                     <span className="text-sm text-white/65">
-                      {session.live ? "Session en direct" : "Session programmée"}
+                      {session.live ? "Live session" : "Scheduled session"}
                     </span>
                   </div>
 
@@ -240,25 +240,25 @@ export default async function SessionDetailsPage({
 
                 <InfoRow
                   icon={<ClockIcon />}
-                  label="Heure"
+                  label="Time"
                   value={`${formatTime(session.startTime)} - ${formatTime(session.endTime)}`}
                 />
 
                 <InfoRow
                   icon={<PinIcon />}
-                  label="Salle"
+                  label="Room"
                   value={session.roomName}
                 />
 
                 <InfoRow
                   icon={<FileIcon />}
-                  label="Capacité"
-                  value={`${session.capacity} places`}
+                  label="Capacity"
+                  value={`${session.capacity} seats`}
                 />
 
                 <InfoRow
                   icon={<FileIcon />}
-                  label="Intervenants"
+                  label="Speakers"
                   value={
                     session.speakers.length > 0 ? (
                       <div className="grid gap-3 sm:grid-cols-2">
@@ -267,7 +267,7 @@ export default async function SessionDetailsPage({
                         ))}
                       </div>
                     ) : (
-                      <span className="text-white/45">Aucun intervenant associé.</span>
+                      <span className="text-white/45">No speakers assigned.</span>
                     )
                   }
                 />

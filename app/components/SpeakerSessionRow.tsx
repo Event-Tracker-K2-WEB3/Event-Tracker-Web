@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { SpeakerSession } from "@/app/services/speakerService";
 
 function formatSessionDate(value: string) {
-  return new Intl.DateTimeFormat("fr-FR", {
+  return new Intl.DateTimeFormat("en-US", {
     day: "2-digit",
     month: "short",
     year: "numeric",
@@ -10,7 +10,7 @@ function formatSessionDate(value: string) {
 }
 
 function formatSessionTime(value: string) {
-  return new Intl.DateTimeFormat("fr-FR", {
+  return new Intl.DateTimeFormat("en-US", {
     hour: "2-digit",
     minute: "2-digit",
   }).format(new Date(value));
@@ -136,7 +136,7 @@ export default function SpeakerSessionRow({
           href={`/sessions/${session.id}`}
           className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-violet-400/50 px-6 py-3 text-sm font-semibold text-violet-200 transition hover:-translate-y-0.5 hover:bg-violet-600 hover:text-white hover:shadow-[0_0_25px_rgba(124,58,237,0.35)] md:min-w-[160px]"
         >
-          Voir la session
+          View session
           <ArrowRightIcon />
         </Link>
       </div>

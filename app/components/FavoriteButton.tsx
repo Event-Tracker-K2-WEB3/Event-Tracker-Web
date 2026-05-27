@@ -23,7 +23,7 @@ interface FavoriteEvent {
 function formatDate(dateString: string): string {
     const date = new Date(dateString);
 
-    return date.toLocaleDateString('fr-FR', {
+    return date.toLocaleDateString('en-US', {
         day: 'numeric',
         month: 'long',
         year: 'numeric',
@@ -36,7 +36,7 @@ function formatDateDay(dateString: string): string {
 
 function formatDateMonth(dateString: string): string {
     return new Date(dateString)
-        .toLocaleDateString('fr-FR', { month: 'short' })
+        .toLocaleDateString('en-US', { month: 'short' })
         .replace('.', '')
         .toUpperCase();
 }
@@ -92,16 +92,16 @@ export function FavoriteButton({ event }: { event: Event }) {
             currentFavorites.push({
                 id: event.id,
                 title: event.title,
-                event: 'Événement',
+                event: 'Event',
                 date: formatDate(event.startDate),
                 dateDay: formatDateDay(event.startDate),
                 dateMonth: formatDateMonth(event.startDate),
                 dateYear: formatDateYear(event.startDate),
-                startTime: new Date(event.startDate).toLocaleTimeString('fr-FR', {
+                startTime: new Date(event.startDate).toLocaleTimeString('en-US', {
                     hour: '2-digit',
                     minute: '2-digit',
                 }),
-                endTime: new Date(event.endDate).toLocaleTimeString('fr-FR', {
+                endTime: new Date(event.endDate).toLocaleTimeString('en-US', {
                     hour: '2-digit',
                     minute: '2-digit',
                 }),
@@ -128,7 +128,7 @@ export function FavoriteButton({ event }: { event: Event }) {
                     ? 'bg-purple-500/20 border-purple-500 text-purple-400 scale-105'
                     : 'bg-[#12121a]/80 border-white/5 text-white/50 hover:text-purple-400 hover:border-purple-500/40 backdrop-blur-sm'
             }`}
-            title={isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris'}
+            title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
         >
             <svg
                 xmlns="http://www.w3.org/2000/svg"

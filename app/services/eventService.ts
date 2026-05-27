@@ -52,7 +52,7 @@ export const eventService = {
     }
     const response = await fetch(url);
     if (!response.ok) {
-      throw new Error(`Erreur: ${response.status}`);
+      throw new Error(`Error: ${response.status}`);
     }
     return response.json()
   },
@@ -61,7 +61,7 @@ export const eventService = {
     const response = await fetch(`${API_BASE_URL}/events/${id}`);
 
     if (!response.ok) {
-      throw new Error(`Erreur: ${response.status}`);
+      throw new Error(`Error: ${response.status}`);
     }
 
     return response.json();
@@ -77,7 +77,7 @@ export const eventService = {
     );
 
     if (!response.ok) {
-      throw new Error(`Erreur: ${response.status}`);
+      throw new Error(`Error: ${response.status}`);
     }
 
     return response.json();
@@ -86,9 +86,9 @@ export const eventService = {
   getSpeakersByEventId: async (eventId: string): Promise<EventSpeaker[]> => {
     const response = await fetch(`${API_BASE_URL}/events/${eventId}/speakers`);
     if (!response.ok) {
-      throw new Error(`Erreur: ${response.status}`);
+      throw new Error(`Error: ${response.status}`);
     }
-    return response.json();  // ← Doit correspondre à EventSpeaker
+    return response.json();  // ← Must match EventSpeaker
   },
 
   getSessionsByEventId: async (eventId: string): Promise<EventSession[]> => {

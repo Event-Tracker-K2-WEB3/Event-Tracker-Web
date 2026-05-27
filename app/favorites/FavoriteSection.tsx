@@ -87,7 +87,7 @@ function getMonth(item: FavoriteItem): string {
 
     if (item.startDate) {
         return new Date(item.startDate)
-            .toLocaleDateString('fr-FR', { month: 'short' })
+            .toLocaleDateString('en-US', { month: 'short' })
             .replace('.', '')
             .toUpperCase();
     }
@@ -172,11 +172,11 @@ export function FavoriteSection() {
 
                         <div>
                             <h1 className="text-4xl font-black tracking-tight text-white md:text-5xl">
-                                Mes <span className="text-event-primary-light">favoris</span>
+                                My <span className="text-event-primary-light">favorites</span>
                             </h1>
 
                             <p className="mt-4 max-w-xl text-base leading-7 text-event-muted">
-                                Retrouvez ici toutes les sessions que vous avez ajoutées à vos favoris.
+                                Find all the sessions you have added to your favorites here.
                             </p>
                         </div>
                     </div>
@@ -184,7 +184,7 @@ export function FavoriteSection() {
                     <div className="relative hidden h-[170px] lg:block">
                         <Image
                             src="/favorisIMG.png"
-                            alt="Illustration favoris"
+                            alt="Favorites illustration"
                             fill
                             className="object-contain"
                             priority
@@ -206,7 +206,7 @@ export function FavoriteSection() {
                                     : 'text-event-muted hover:text-white'
                             }`}
                         >
-                            Toutes ({favorites.length})
+                            All ({favorites.length})
                             {activeFilter === 'all' && (
                                 <span className="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-event-primary-light" />
                             )}
@@ -221,7 +221,7 @@ export function FavoriteSection() {
                                     : 'text-event-muted hover:text-white'
                             }`}
                         >
-                            À venir ({upcomingFavorites.length})
+                            Upcoming ({upcomingFavorites.length})
                             {activeFilter === 'upcoming' && (
                                 <span className="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-event-primary-light" />
                             )}
@@ -236,7 +236,7 @@ export function FavoriteSection() {
                                     : 'text-event-muted hover:text-white'
                             }`}
                         >
-                            Passées ({pastFavorites.length})
+                            Past ({pastFavorites.length})
                             {activeFilter === 'past' && (
                                 <span className="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-event-primary-light" />
                             )}
@@ -250,7 +250,7 @@ export function FavoriteSection() {
                             className="inline-flex w-fit items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-5 py-3 text-sm font-semibold text-event-muted transition hover:border-red-400/40 hover:bg-red-500/10 hover:text-red-300"
                         >
                             <Trash2 size={17} />
-                            Tout supprimer
+                            Clear all
                         </button>
                     )}
                 </div>
@@ -323,7 +323,7 @@ export function FavoriteSection() {
                                                 removeFavorite(item.id);
                                             }}
                                             className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border border-red-500/25 bg-red-500/10 text-red-500 transition-all duration-300 hover:scale-105 hover:bg-red-500/20 hover:text-red-400"
-                                            title="Retirer des favoris"
+                                            title="Remove from favorites"
                                         >
                                             <Trash2 size={24} />
                                         </button>
@@ -346,7 +346,7 @@ function EmptyFavoriteState() {
             <CalendarHeart size={38} className="mx-auto mb-5 text-event-primary" />
 
             <p className="text-event-muted">
-                Aucun favori trouvé dans cette catégorie.
+                No favorites found in this category.
             </p>
 
             <Link
@@ -354,7 +354,7 @@ function EmptyFavoriteState() {
                 className="mt-7 inline-flex items-center justify-center gap-3 rounded-xl border border-event-primary/70 px-7 py-3 text-sm font-semibold text-event-primary-light transition hover:bg-event-primary/10"
             >
                 <CalendarHeart size={18} />
-                Voir le programme
+                View program
             </Link>
         </div>
     );
@@ -366,9 +366,9 @@ function EmptyFavoriteCta() {
             <CalendarHeart size={38} className="mx-auto mb-5 text-event-primary" />
 
             <p className="text-event-muted">
-                Vous n’avez pas encore ajouté de session en favori.
+                You have not added any session to your favorites yet.
                 <br />
-                Parcourez le programme et ajoutez vos sessions préférées !
+                Browse the program and add your favorite sessions!
             </p>
 
             <Link
@@ -376,7 +376,7 @@ function EmptyFavoriteCta() {
                 className="mt-7 inline-flex items-center justify-center gap-3 rounded-xl border border-event-primary/70 px-7 py-3 text-sm font-semibold text-event-primary-light transition hover:bg-event-primary/10"
             >
                 <CalendarHeart size={18} />
-                Voir le programme
+                View program
             </Link>
         </div>
     );

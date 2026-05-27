@@ -10,19 +10,19 @@ export default function HeroSection() {
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 111.063 1.06l-.041.02a.75.75 0 01-1.062-1.06zM12 21a9 9 0 110-18 9 9 0 010 18zm0 0v-4.5" />
                     </svg>
-                    À PROPOS
+                    ABOUT
                 </div>
 
 
                 <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
-                    À propos de <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-purple-500 to-indigo-400">EventSync</span>
+                    About <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-purple-500 to-indigo-400">EventSync</span>
                 </h1>
 
 
                 <p className="text-gray-400 text-lg sm:text-xl max-w-2xl font-light leading-relaxed">
-                    EventSync est la plateforme qui vous permet de vivre chaque événement plus simplement.
-                    Suivez les sessions en direct, découvrez le programme, interagissez avec les intervenants
-                    et organisez votre expérience.
+                    EventSync is the platform that helps you experience every event more easily.
+                    Follow live sessions, explore the program, interact with speakers,
+                    and organize your experience.
                 </p>
 
 
@@ -34,13 +34,13 @@ export default function HeroSection() {
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
                         </svg>
-                        Découvrir les événements
+                        Discover events
                     </Link>
                     <Link
                         href="/planning"
                         className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-transparent border border-white/20 hover:border-white/60 hover:bg-white/5 text-white font-semibold rounded-xl transition-all duration-300"
                     >
-                        Voir le planning
+                        View schedule
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                         </svg>

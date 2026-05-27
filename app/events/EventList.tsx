@@ -5,7 +5,7 @@ import type { Event } from '../services/eventService';
 
 function formatDate(dateString: string): string {
     const date = new Date(dateString);
-    return date.toLocaleDateString('fr-FR', {
+    return date.toLocaleDateString('en-US', {
         day: 'numeric',
         month: 'long',
         year: 'numeric'
@@ -14,7 +14,7 @@ function formatDate(dateString: string): string {
 
 function formatMonth(dateString: string): string {
     const date = new Date(dateString);
-    return date.toLocaleDateString('fr-FR', { month: 'short' }).toUpperCase();
+    return date.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
 }
 
 function formatDay(dateString: string): string {

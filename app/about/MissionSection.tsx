@@ -7,8 +7,8 @@ export default function MissionSection() {
                 <div className="lg:col-span-5 space-y-4 lg:sticky lg:top-8">
                     <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">Notre mission</h2>
                     <p className="text-gray-400 text-base sm:text-lg leading-relaxed font-light">
-                        Nous simplifions la navigation dans vos événements et plaçons l'expérience participant au cœur de tout.
-                        Notre mission est de connecter les personnes, les contenus et les moments qui comptent.
+                        We simplify event navigation and put the participant experience at the heart of everything.
+                        Our mission is to connect people, content, and the moments that matter.
                     </p>
                 </div>
 
@@ -22,8 +22,8 @@ export default function MissionSection() {
                             </svg>
                         </div>
                         <div>
-                            <h3 className="text-lg font-semibold text-white mb-1">Suivi en temps réel</h3>
-                            <p className="text-gray-400 font-light text-sm sm:text-base">Accédez aux sessions en direct et ne manquez rien de l'action.</p>
+                            <h3 className="text-lg font-semibold text-white mb-1">Real-time tracking</h3>
+                            <p className="text-gray-400 font-light text-sm sm:text-base">Access live sessions and do not miss any of the action.</p>
                         </div>
                     </div>
 
@@ -36,7 +36,7 @@ export default function MissionSection() {
                         </div>
                         <div>
                             <h3 className="text-lg font-semibold text-white mb-1">Interaction live</h3>
-                            <p className="text-gray-400 font-light text-sm sm:text-base">Posez vos questions, réagissez et échangez avec les intervenants.</p>
+                            <p className="text-gray-400 font-light text-sm sm:text-base">Ask questions, react, and exchange with speakers.</p>
                         </div>
                     </div>
 
@@ -49,7 +49,7 @@ export default function MissionSection() {
                         </div>
                         <div>
                             <h3 className="text-lg font-semibold text-white mb-1">Organisation facile</h3>
-                            <p className="text-gray-400 font-light text-sm sm:text-base">Ajoutez vos favoris, créez votre parcours et gérez votre agenda.</p>
+                            <p className="text-gray-400 font-light text-sm sm:text-base">Add favorites, build your itinerary, and manage your agenda.</p>
                         </div>
                     </div>
                 </div>
