@@ -2,8 +2,8 @@ import { getSpeakers } from "@/app/services/speakerService";
 import SpeakerExplorer from "@/app/components/SpeakerExplorer";
 
 export const metadata = {
-  title: "Intervenants — EventSync",
-  description: "Découvrez nos experts et conférenciers",
+  title: "Speakers — EventSync",
+  description: "Discover our experts and speakers",
 };
 
 export default async function SpeakersPage() {

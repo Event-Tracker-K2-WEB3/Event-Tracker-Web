@@ -15,19 +15,19 @@ return (
                         <span><span className="text-white">Event</span><span className="text-violet-400">Sync</span></span>
                     </Link>
                     <p className="text-white/40 text-sm leading-relaxed max-w-xs">
-                        La plateforme qui connecte les événements et les participants en temps réel.
+                        The platform that connects events and participants in real time.
                     </p>
                 </div>
 
                 {[
-                    { titre: "Navigation", liens: ["Accueil", "Événements", "Intervenants", "À propos"] },
-                    { titre: "Ressources", liens: ["Programme", "FAQ", "Contact"] },
-                    { titre: "Légal", liens: ["Mentions légales", "Confidentialité", "Conditions d'utilisation"] },
-                ].map(({ titre, liens }) => (
-                    <div key={titre}>
-                        <h4 className="text-white/60 text-xs uppercase tracking-widest mb-4">{titre}</h4>
+                    { title: "Navigation", links: ["Home", "Events", "Speakers", "About"] },
+                    { title: "Resources", links: ["Program", "FAQ", "Contact"] },
+                    { title: "Legal", links: ["Legal notice", "Privacy", "Terms of use"] },
+                ].map(({ title, links }) => (
+                    <div key={title}>
+                        <h4 className="text-white/60 text-xs uppercase tracking-widest mb-4">{title}</h4>
                         <ul className="space-y-2.5">
-                            {liens.map((l) => (
+                            {links.map((l) => (
                                 <li key={l}>
                                     <Link href="#" className="text-white/40 text-sm hover:text-white transition-colors">{l}</Link>
                                 </li>
@@ -38,7 +38,7 @@ return (
             </div>
 
             <div className="mt-12 pt-6 border-t border-white/5 flex items-center justify-between">
-                <p className="text-white/25 text-sm">© 2026 EventSync. Tous droits réservés.</p>
+                <p className="text-white/25 text-sm">© 2026 EventSync. All rights reserved.</p>
             </div>
         </div>
     </footer>

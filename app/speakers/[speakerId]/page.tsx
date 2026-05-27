@@ -41,7 +41,7 @@ function getSessionImageSource(image?: string | null) {
 }
 
 function formatSessionDate(value: string) {
-  return new Intl.DateTimeFormat("fr-FR", {
+  return new Intl.DateTimeFormat("en-US", {
     day: "2-digit",
     month: "short",
     year: "numeric",
@@ -49,7 +49,7 @@ function formatSessionDate(value: string) {
 }
 
 function formatSessionTime(value: string) {
-  return new Intl.DateTimeFormat("fr-FR", {
+  return new Intl.DateTimeFormat("en-US", {
     hour: "2-digit",
     minute: "2-digit",
   }).format(new Date(value));
@@ -229,7 +229,7 @@ function SpeakerSessionRow({ session }: { session: SpeakerSession }) {
           href={`/sessions/${session.id}`}
           className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-violet-400/50 px-6 py-3 text-sm font-semibold text-violet-200 transition hover:bg-violet-600 hover:text-white md:min-w-[160px]"
         >
-          Voir la session
+          View session
           <ArrowRightIcon />
         </Link>
       </div>
@@ -262,7 +262,7 @@ export default async function SpeakerDetailsPage({
             href="/speakers"
             className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-2 text-sm text-white/70 transition hover:border-violet-400/50 hover:text-violet-200"
           >
-            ← Retour aux intervenants
+            ← Back to speakers
           </Link>
 
           <div className="mt-8 grid gap-10 border-b border-white/10 pb-10 lg:grid-cols-[320px_1fr] lg:items-center">
@@ -282,7 +282,7 @@ export default async function SpeakerDetailsPage({
 
             <div className="animate-fade-up animation-delay-200">
               <p className="text-sm font-bold uppercase tracking-[0.45em] text-violet-300">
-                Intervenant
+                Speaker
               </p>
 
               <h1 className="mt-5 text-4xl font-bold tracking-tight text-white md:text-6xl">
@@ -318,7 +318,7 @@ export default async function SpeakerDetailsPage({
           <section id="sessions" className="animate-fade-up animation-delay-300 mt-9">
             <div className="mb-6">
               <h2 className="text-2xl font-bold text-white">
-                Sessions avec cet intervenant
+                Sessions by this speaker
               </h2>
               <div className="mt-3 h-1 w-16 rounded-full bg-violet-500" />
             </div>
@@ -331,7 +331,7 @@ export default async function SpeakerDetailsPage({
               </div>
             ) : (
               <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-8 text-center text-white/55">
-                Aucune session associée pour le moment.
+                No sessions assigned yet.
               </div>
             )}
           </section>

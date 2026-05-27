@@ -24,7 +24,7 @@ function formatDay(dateString: string): string {
 
 function formatMonth(dateString: string): string {
   return new Date(dateString)
-    .toLocaleDateString("fr-FR", { month: "short" })
+    .toLocaleDateString("en-US", { month: "short" })
     .replace(".", "")
     .toUpperCase();
 }
@@ -33,12 +33,12 @@ function formatEventDate(startDate: string, endDate: string): string {
   const start = new Date(startDate);
   const end = new Date(endDate);
 
-  const startLabel = start.toLocaleDateString("fr-FR", {
+  const startLabel = start.toLocaleDateString("en-US", {
     day: "2-digit",
     month: "short",
   });
 
-  const endLabel = end.toLocaleDateString("fr-FR", {
+  const endLabel = end.toLocaleDateString("en-US", {
     day: "2-digit",
     month: "short",
     year: "numeric",
@@ -81,13 +81,13 @@ export default function Page() {
         id: "events",
         icon: <CalendarStatsIcon />,
         value: `${stats.totalEvents}`,
-        label: activeSearch ? "Résultats" : "Événements",
+        label: activeSearch ? "Results" : "Events",
       },
       {
         id: "speakers",
         icon: <UserStatsIcon />,
         value: `${stats.totalSpeakers}`,
-        label: "Intervenants",
+        label: "Speakers",
       },
       {
         id: "sessions",
@@ -129,10 +129,10 @@ export default function Page() {
         totalEvents: data.totalElements,
       }));
     } catch (error) {
-      console.error("Erreur lors du chargement des événements :", error);
+      console.error("Error loading events:", error);
 
       setEvents([]);
-      setEventsError("Impossible de charger les événements.");
+      setEventsError("Unable to load events.");
 
       setStats((previousStats) => ({
         ...previousStats,
@@ -152,7 +152,7 @@ export default function Page() {
         totalSpeakers: speakers.length,
       }));
     } catch (error) {
-      console.error("Erreur lors du chargement des intervenants :", error);
+      console.error("Error loading speakers:", error);
 
       setStats((previousStats) => ({
         ...previousStats,
@@ -232,20 +232,20 @@ export default function Page() {
           <div className="z-10 flex flex-col justify-center py-8 px-12">
             <div className="mb-5 inline-flex w-fit items-center gap-2 rounded-full border border-white/15 bg-white/[0.03] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.04em] text-slate-200">
               <CalendarIcon />
-              Plateforme d’événements
+              Event platform
             </div>
 
             <h1 className="max-w-[520px] text-[42px] font-extrabold leading-[0.98] tracking-[-0.04em] text-white sm:text-[56px] lg:text-[58px]">
-              Vivez chaque <br />
-              événement <br />
+              Experience every <br />
+              event <br />
               <span className="bg-gradient-to-r from-[#b86cff] to-[#8b5cf6] bg-clip-text text-transparent">
-                en temps réel.
+                in real time.
               </span>
             </h1>
 
             <p className="mt-5 max-w-[520px] text-[15px] leading-7 text-slate-300">
-              Découvrez des conférences inspirantes, des ateliers pratiques et
-              interagissez en direct avec les intervenants et la communauté.
+              Discover inspiring conferences, hands-on workshops, and
+              interact live with speakers and the community.
             </p>
 
             <form
@@ -258,7 +258,7 @@ export default function Page() {
                 type="text"
                 value={searchTerm}
                 onChange={(event) => setSearchTerm(event.target.value)}
-                placeholder="Rechercher un événement, un lieu, un sujet..."
+                placeholder="Search for an event, a place, a topic..."
                 className="min-w-0 flex-1 bg-transparent text-[14px] text-white placeholder:text-slate-400 outline-none"
               />
 
@@ -267,27 +267,27 @@ export default function Page() {
                 disabled={isLoadingEvents}
                 className="h-[42px] shrink-0 rounded-xl bg-gradient-to-r from-[#7c3aed] to-[#6d4dff] px-5 text-[14px] font-semibold text-white shadow-[0_10px_30px_rgba(124,58,237,0.36)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-70"
               >
-                Rechercher
+                Search
               </button>
             </form>
 
             <div className="mt-7 grid max-w-[650px] grid-cols-1 gap-5 sm:grid-cols-3">
               <FeatureItem
                 icon={<MiniCalendarIcon />}
-                title="Programme en temps réel"
-                text="Ne manquez aucune session"
+                title="Real-time program"
+                text="Never miss a session"
               />
 
               <FeatureItem
                 icon={<ChatIcon />}
-                title="Interaction en direct"
-                text="Posez vos questions live"
+                title="Live interaction"
+                text="Ask your questions live"
               />
 
               <FeatureItem
                 icon={<StarIcon />}
-                title="Votre itinéraire"
-                text="Ajoutez vos sessions favorites"
+                title="Your itinerary"
+                text="Add your favorite sessions"
               />
             </div>
           </div>
@@ -305,11 +305,11 @@ export default function Page() {
             <div className="absolute bottom-[28px] right-[26px] w-[355px] rounded-[22px] border border-white/20 bg-[#0b0c1f]/55 p-6 shadow-[0_24px_80px_rgba(0,0,0,0.52)] backdrop-blur-[18px] mr-12">
               <div className="mb-4 flex items-center gap-2 text-[12px] font-bold uppercase tracking-[0.06em] text-slate-200">
                 <span className="h-2 w-2 rounded-full bg-[#ff4d6d]" />
-                En ce moment
+                Happening now
               </div>
 
               <h2 className="text-[20px] font-bold leading-tight text-white">
-                L’avenir de l’IA générative
+                The future of generative AI
               </h2>
 
               <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-[13px] text-slate-300">
@@ -320,7 +320,7 @@ export default function Page() {
 
                 <span className="flex items-center gap-2">
                   <PinIcon />
-                  Salle A
+                  Room A
                 </span>
               </div>
 
@@ -331,14 +331,14 @@ export default function Page() {
 
               <button className="mt-6 flex h-[48px] w-full items-center justify-center gap-3 rounded-xl border border-[#b65cff]/70 bg-white/[0.01] text-[14px] font-semibold text-white transition hover:bg-white/[0.06]">
                 <ArrowIcon />
-                Voir la session en direct
+                View live session
               </button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ÉVÉNEMENTS */}
+      {/* EVENTS */}
       <section className="relative overflow-hidden border-b border-white/5 bg-[#09101f] py-8">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(76,54,194,0.14),transparent_30%),radial-gradient(circle_at_82%_20%,rgba(88,28,255,0.12),transparent_34%)]" />
 
@@ -347,13 +347,13 @@ export default function Page() {
             <div>
               <div className="mb-2 flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[0.06em] text-slate-300">
                 <UpcomingCalendarIcon />
-                {activeSearch ? "Résultats de recherche" : "Événements à venir"}
+                {activeSearch ? "Search results" : "Upcoming events"}
               </div>
 
               <h2 className="text-[25px] font-bold tracking-[-0.03em] text-white">
                 {activeSearch
-                  ? `Résultats pour « ${activeSearch} »`
-                  : "Explorez les prochains événements"}
+                  ? `Results for “${activeSearch}”`
+                  : "Explore upcoming events"}
               </h2>
             </div>
 
@@ -363,7 +363,7 @@ export default function Page() {
                 onClick={handleResetSearch}
                 className="w-fit rounded-xl border border-white/15 bg-white/[0.04] px-4 py-2 text-[13px] font-semibold text-slate-200 transition hover:border-[#a855f7]/50 hover:bg-white/[0.08]"
               >
-                Réinitialiser la recherche
+                Reset search
               </button>
             )}
           </div>
@@ -375,7 +375,7 @@ export default function Page() {
             >
               {isLoadingEvents && (
                 <div className="flex h-[260px] w-full min-w-[340px] items-center justify-center rounded-[18px] border border-white/10 bg-white/[0.03] px-6 text-center text-sm text-slate-300">
-                  Chargement des événements...
+                  Loading events...
                 </div>
               )}
 
@@ -390,8 +390,8 @@ export default function Page() {
                 upcomingEvents.length === 0 && (
                   <div className="flex h-[260px] w-full min-w-[340px] items-center justify-center rounded-[18px] border border-white/10 bg-white/[0.03] px-6 text-center text-sm text-slate-300">
                     {activeSearch
-                      ? `Aucun événement trouvé pour « ${activeSearch} ».`
-                      : "Aucun événement disponible."}
+                      ? `No event found for “${activeSearch}”.`
+                      : "No events available."}
                   </div>
                 )}
 
@@ -460,7 +460,7 @@ export default function Page() {
             <button
               type="button"
               onClick={() => scrollCarousel("left")}
-              aria-label="Voir les événements précédents"
+              aria-label="View previous events"
               className="absolute -left-6 top-1/2 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-[#151c2c]/95 text-white shadow-[0_15px_35px_rgba(0,0,0,0.4)] transition hover:border-[#a855f7]/50 hover:bg-[#20283b] xl:flex"
             >
               <ArrowLeftCarouselIcon />
@@ -469,7 +469,7 @@ export default function Page() {
             <button
               type="button"
               onClick={() => scrollCarousel("right")}
-              aria-label="Voir les événements suivants"
+              aria-label="View next events"
               className="absolute -right-6 top-1/2 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-[#151c2c]/95 text-white shadow-[0_15px_35px_rgba(0,0,0,0.4)] transition hover:border-[#a855f7]/50 hover:bg-[#20283b] xl:flex"
             >
               <ArrowRightCarouselIcon />
@@ -478,7 +478,7 @@ export default function Page() {
         </div>
       </section>
 
-      {/* STATISTIQUES */}
+      {/* STATS */}
       <section className="bg-[#08101f] pb-6">
         <div className="mx-auto w-full max-w-[1360px] px-6 lg:px-0">
           <div className="flex flex-col gap-8 rounded-[22px] border border-[#9b59ff]/40 bg-[linear-gradient(90deg,rgba(27,22,52,0.92),rgba(25,27,57,0.92))] px-7 py-5 shadow-[0_20px_60px_rgba(0,0,0,0.22)] lg:flex-row lg:items-center lg:justify-between">
@@ -489,12 +489,12 @@ export default function Page() {
 
               <div>
                 <h3 className="text-[15px] font-bold text-white">
-                  EventSync, votre compagnon d’événements
+                  EventSync, your event companion
                 </h3>
 
                 <p className="mt-1 max-w-[490px] text-[13px] leading-5 text-slate-300">
-                  Suivez le programme, participez aux sessions en direct et créez
-                  votre expérience unique à chaque événement.
+                  Follow the program, join live sessions, and create
+                  your own unique experience at every event.
                 </p>
               </div>
             </div>
@@ -513,7 +513,7 @@ export default function Page() {
         </div>
       </section>
 
-      {/* ── FOOTER ── */}
+      {/* FOOTER */}
 <footer className="border-t border-white/5 bg-[#06060f]">
 <div className="max-w-7xl mx-auto px-6 py-12">
   <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
@@ -525,19 +525,19 @@ export default function Page() {
         <span><span className="text-white">Event</span><span className="text-violet-400">Sync</span></span>
       </a>
       <p className="text-white/40 text-sm leading-relaxed max-w-xs">
-        La plateforme qui connecte les événements et les participants en temps réel.
+        The platform that connects events and participants in real time.
       </p>
     </div>
 
     {[
-      { titre: "Navigation", liens: ["Accueil", "Événements", "Intervenants", "À propos"] },
-      { titre: "Ressources", liens: ["Programme", "FAQ", "Contact"] },
-      { titre: "Légal", liens: ["Mentions légales", "Confidentialité", "Conditions d'utilisation"] },
-    ].map(({ titre, liens }) => (
-      <div key={titre}>
-        <h4 className="text-white/60 text-xs uppercase tracking-widest mb-4">{titre}</h4>
+      { title: "Navigation", links: ["Home", "Events", "Speakers", "About"] },
+      { title: "Resources", links: ["Program", "FAQ", "Contact"] },
+      { title: "Legal", links: ["Legal notice", "Privacy", "Terms of use"] },
+    ].map(({ title, links }) => (
+      <div key={title}>
+        <h4 className="text-white/60 text-xs uppercase tracking-widest mb-4">{title}</h4>
         <ul className="space-y-2.5">
-          {liens.map((l) => (
+          {links.map((l) => (
             <li key={l}>
               <a href="#" className="text-white/40 text-sm hover:text-white transition-colors">{l}</a>
             </li>
@@ -548,7 +548,7 @@ export default function Page() {
   </div>
 
   <div className="mt-12 pt-6 border-t border-white/5 flex items-center justify-between">
-    <p className="text-white/25 text-sm">© 2026 EventSync. Tous droits réservés.</p>
+    <p className="text-white/25 text-sm">© 2026 EventSync. All rights reserved.</p>
   </div>
 </div>
 </footer>

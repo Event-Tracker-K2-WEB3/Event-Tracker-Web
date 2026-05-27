@@ -13,12 +13,12 @@ export default function StatsSection() {
     fetch('http://localhost:8080/about/stats')
         .then((reponse) => reponse.json())
         .then((data) => {
-          // 3. On enregistre les vrais chiffres reçus du backend
+          // 3. Store the real numbers received from the backend
           setTotalEvents(data.totalEvents);
           setTotalSpeakers(data.totalSpeakers);
           setTotalSessions(data.totalSessions);
         })
-        .catch((erreur) => console.error("Erreur de connexion :", erreur));
+        .catch((error) => console.error("Connection error:", error));
   }, []);
 
   return (
@@ -31,7 +31,7 @@ export default function StatsSection() {
             <span className="text-4xl sm:text-5xl font-black text-white mb-1">
               {totalEvents}+
             </span>
-              <span className="text-gray-400 text-xs tracking-wider uppercase">Événements</span>
+              <span className="text-gray-400 text-xs tracking-wider uppercase">Events</span>
             </div>
 
 
@@ -39,7 +39,7 @@ export default function StatsSection() {
             <span className="text-4xl sm:text-5xl font-black text-white mb-1">
               {totalSpeakers}+
             </span>
-              <span className="text-gray-400 text-xs tracking-wider uppercase">Intervenants</span>
+              <span className="text-gray-400 text-xs tracking-wider uppercase">Speakers</span>
             </div>
 
 

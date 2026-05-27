@@ -8,7 +8,7 @@ interface EventSessionCardProps {
 }
 
 function formatTime(dateString: string): string {
-    return new Date(dateString).toLocaleTimeString("fr-FR", {
+    return new Date(dateString).toLocaleTimeString("en-US", {
         hour: "2-digit",
         minute: "2-digit",
     });
@@ -18,7 +18,7 @@ export const EventSessionCard = ({ session }: EventSessionCardProps) => {
     return (
         <Link
             href={`/sessions/${session.id}`}
-            aria-label={`Voir la session ${session.title}`}
+            aria-label={`View session ${session.title}`}
             className="group block rounded-xl border border-white/10 bg-[#09101f]/78 p-3 transition hover:border-event-primary/45 hover:bg-[#11182a]/85"
         >
             <article className="grid gap-3 sm:grid-cols-[92px_1fr_120px] sm:items-center">
@@ -42,14 +42,14 @@ export const EventSessionCard = ({ session }: EventSessionCardProps) => {
                     </h3>
 
                     <p className="mt-1.5 line-clamp-2 text-xs sm:text-sm leading-5 text-event-muted">
-                        {session.description || "Aucune description disponible."}
+                        {session.description || "No description available."}
                     </p>
                 </div>
 
                 <div className="flex items-center gap-1.5 text-xs sm:justify-end text-event-muted">
                     <MapPin size={14} className="shrink-0 text-event-primary" />
                     <span className="line-clamp-1">
-                        {session.roomName || "Salle à confirmer"}
+                        {session.roomName || "Room to be confirmed"}
                     </span>
                 </div>
             </article>

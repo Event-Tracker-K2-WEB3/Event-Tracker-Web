@@ -53,7 +53,7 @@ export default function MobileNavMenu({
           onClick={onClose}
           className="rounded-xl bg-gradient-to-r from-event-primary to-event-secondary px-4 py-3 text-center text-sm font-semibold text-white"
         >
-          Voir le programme
+          View program
         </Link>
 
         <Link
@@ -61,7 +61,7 @@ export default function MobileNavMenu({
           onClick={onClose}
           className="rounded-xl border border-event-border px-4 py-3 text-center text-sm font-semibold text-event-text"
         >
-          Favoris
+          Favorites
         </Link>
       </div>
     </div>

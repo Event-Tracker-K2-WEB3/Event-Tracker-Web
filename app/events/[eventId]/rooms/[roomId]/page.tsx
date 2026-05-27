@@ -49,7 +49,7 @@ export default async function RoomPlanningPage({ params }: Props) {
       />
     );
   } catch (error) {
-    console.error("Erreur chargement page Room :", error);
+    console.error("Error loading room page:", error);
     notFound();
   }
 }

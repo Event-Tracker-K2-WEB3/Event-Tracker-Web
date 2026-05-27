@@ -37,11 +37,11 @@ function dateKey(dateValue: string | Date): string {
 }
 
 function formatDayLabel(date: Date): string {
-  const day = date.toLocaleDateString("fr-FR", {
+  const day = date.toLocaleDateString("en-US", {
     day: "numeric",
   });
 
-  const month = date.toLocaleDateString("fr-FR", {
+  const month = date.toLocaleDateString("en-US", {
     month: "long",
   });
 
@@ -81,7 +81,7 @@ function getDefaultActiveDay(days: DayOption[]): string {
 }
 
 function formatHour(dateString: string): string {
-  return new Date(dateString).toLocaleTimeString("fr-FR", {
+  return new Date(dateString).toLocaleTimeString("en-US", {
     hour: "2-digit",
     minute: "2-digit",
   });
@@ -156,7 +156,7 @@ export default function RoomPlanningExplorer({
           <div className="max-w-[620px]">
             <div className="mb-5 inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/[0.03] px-3 py-1.5 text-[12px] font-bold uppercase tracking-[0.03em] text-slate-200">
               <CalendarDays size={15} />
-              Planning par salle
+              Room schedule
             </div>
 
             <h1 className="text-[42px] font-extrabold leading-none tracking-[-0.04em] text-white md:text-[52px]">
@@ -164,18 +164,18 @@ export default function RoomPlanningExplorer({
             </h1>
 
             <p className="mt-4 max-w-[540px] text-[16px] leading-7 text-slate-300">
-              Découvrez toutes les sessions prévues dans cette salle pour le{" "}
+              Explore all sessions scheduled in this room for{" "}
               {event.title}.
             </p>
           </div>
         </div>
       </section>
 
-      {/* CONTENU */}
+      {/* CONTENT */}
       <section className="event-container py-5">
-        {/* FILTRES */}
+        {/* FILTERS */}
         <div className="mb-6 flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
-          {/* Filtres de date */}
+          {/* Date filters */}
           <div className="inline-flex w-fit overflow-hidden rounded-xl border border-white/15 bg-white/[0.03]">
             {days.map((day) => {
               const isActive = day.key === activeDay;
@@ -198,7 +198,7 @@ export default function RoomPlanningExplorer({
             })}
           </div>
 
-          {/* Select salle */}
+          {/* Room select */}
           <div className="relative w-full lg:w-[315px]">
             <Building2
               size={18}
@@ -228,13 +228,13 @@ export default function RoomPlanningExplorer({
           </div>
         </div>
 
-        {/* GRILLE PRINCIPALE */}
+        {/* MAIN GRID */}
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
           {/* Sessions */}
           <div>
             {visibleSessions.length === 0 ? (
               <div className="flex min-h-[280px] items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] px-6 text-center text-slate-300">
-                Aucune session n’est prévue dans cette salle pour cette date.
+                No session is scheduled in this room for this date.
               </div>
             ) : (
               <div className="space-y-2.5">
@@ -255,12 +255,12 @@ export default function RoomPlanningExplorer({
                       ].join(" ")}
                     >
                       <div className="flex min-w-0 items-center gap-5">
-                        {/* Heure */}
+                        {/* Time */}
                         <div className="flex h-[62px] w-[102px] shrink-0 items-center justify-center rounded-xl border border-violet-500 bg-[#091120] text-[20px] font-semibold text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.03)]">
                           {formatHour(session.startTime)}
                         </div>
 
-                        {/* Infos */}
+                        {/* Info */}
                         <div className="min-w-0">
                           <h2 className="truncate text-[18px] font-bold tracking-[-0.02em] text-white">
                             {session.title}
@@ -270,7 +270,7 @@ export default function RoomPlanningExplorer({
                             <span className="inline-flex items-center gap-2">
                               <UserRound size={16} />
                               {session.speaker?.name ??
-                                "Intervenant à confirmer"}
+                                "Speaker to be confirmed"}
                             </span>
 
                             <span className="hidden h-1 w-1 rounded-full bg-slate-500 sm:inline-block" />
@@ -283,7 +283,7 @@ export default function RoomPlanningExplorer({
                         </div>
                       </div>
 
-                      {/* Statut */}
+                      {/* Status */}
                       <div className="flex shrink-0 items-center justify-end pr-2">
                         {live ? (
                           <span className="inline-flex items-center gap-2 rounded-full bg-[#ff334f] px-4 py-2 text-[13px] font-extrabold uppercase tracking-wide text-white shadow-[0_10px_24px_rgba(255,51,79,0.32)]">
@@ -293,7 +293,7 @@ export default function RoomPlanningExplorer({
                         ) : (
                           <span
                             className="h-4 w-4 rounded-full bg-violet-500 shadow-[0_0_18px_rgba(168,85,247,0.8)]"
-                            aria-label="Session à venir"
+                            aria-label="Upcoming session"
                           />
                         )}
                       </div>
@@ -303,23 +303,23 @@ export default function RoomPlanningExplorer({
               </div>
             )}
 
-            {/* LÉGENDE */}
+            {/* LEGEND */}
             <div className="mt-7 flex flex-wrap items-center justify-center gap-6 text-[14px] text-slate-300">
               <div className="flex items-center gap-2">
                 <span className="h-3.5 w-3.5 rounded-full bg-[#ff334f]" />
-                <span>LIVE = session en cours</span>
+                <span>LIVE = current session</span>
               </div>
 
               <span className="hidden h-6 w-px bg-white/15 sm:block" />
 
               <div className="flex items-center gap-2">
                 <span className="h-3.5 w-3.5 rounded-full bg-violet-500" />
-                <span>À venir</span>
+                <span>Upcoming</span>
               </div>
             </div>
           </div>
 
-          {/* CARTE SALLE */}
+          {/* ROOM CARD */}
           <aside className="h-fit rounded-2xl border border-violet-400/45 bg-[#0d1526]/88 p-5 shadow-[0_20px_60px_rgba(0,0,0,0.24)]">
             <div className="flex items-center gap-4">
               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[linear-gradient(145deg,#33206e,#18153b)] text-fuchsia-300">
@@ -352,8 +352,8 @@ export default function RoomPlanningExplorer({
 
                 <p className="text-[15px] text-slate-200">
                   {maxCapacity !== null
-                    ? `Capacité ${maxCapacity}`
-                    : "Capacité non renseignée"}
+                    ? `Capacity ${maxCapacity}`
+                    : "Capacity not provided"}
                 </p>
               </div>
             </div>

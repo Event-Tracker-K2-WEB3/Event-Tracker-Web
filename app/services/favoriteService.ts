@@ -22,7 +22,7 @@ export function getFavoriteSessions(): Session[] {
 
     return parsedFavorites;
   } catch (error) {
-    console.error("Erreur lecture favoris :", error);
+    console.error("Error reading favorites:", error);
     return [];
   }
 }
