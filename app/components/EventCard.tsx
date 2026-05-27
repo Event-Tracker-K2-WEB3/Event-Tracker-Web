@@ -3,35 +3,31 @@ import { MapPin, Calendar } from "lucide-react"
 import type { Event } from '../services/eventService';
 import { FavoriteButton } from './FavoriteButton';
 
-// Formater le jour (ex: "12")
 function formatDay(dateString: string): string {
   return new Date(dateString).getDate().toString();
 }
 
-// Formater le mois (ex: "JUIN")
 function formatMonth(dateString: string): string {
-  return new Date(dateString).toLocaleDateString('fr-FR', { month: 'short' }).toUpperCase();
+  return new Date(dateString).toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
 }
 
-// Formater la date complète (ex: "12 - 14 Juin 2025")
 function formatDateRange(startDateStr: string, endDateStr: string): string {
   const start = new Date(startDateStr);
   const end = new Date(endDateStr);
 
   const startDay = start.getDate();
   const endDay = end.getDate();
-  const month = start.toLocaleDateString('fr-FR', { month: 'long' });
+  const month = start.toLocaleDateString('en-US', { month: 'long' });
   const year = start.getFullYear();
 
   if (start.getMonth() === end.getMonth() && start.getFullYear() === end.getFullYear()) {
     return `${startDay} - ${endDay} ${month} ${year}`;
   }
 
-  const endMonth = end.toLocaleDateString('fr-FR', { month: 'long' });
+  const endMonth = end.toLocaleDateString('en-US', { month: 'long' });
   return `${startDay} ${month} - ${endDay} ${endMonth} ${year}`;
 }
 
-// Vérifier si l'événement est en live
 function isEventLive(startDateStr: string, endDateStr: string): boolean {
   const now = new Date();
   const start = new Date(startDateStr);
@@ -47,7 +43,7 @@ export function EventCard({ event }: { event: Event }) {
       href={`/events/${event.id}`}
       className="event-glass group overflow-hidden rounded-xl border border-event-border transition hover:-translate-y-0.5 hover:border-event-primary/50"
     >
-    
+
       <div className="relative h-24 bg-gradient-to-br from-event-primary/30 via-event-primary/10 to-event-secondary/20">
 
         <div className="absolute left-3 top-3 rounded-lg border border-event-accent/60 bg-event-bg/60 px-2 py-1.5 text-center backdrop-blur-md">
@@ -71,7 +67,7 @@ export function EventCard({ event }: { event: Event }) {
       </div>
 
       <div className="p-3 space-y-1.5">
-        {/* Titre - plus petit */}
+        
         <h3 className="text-sm font-bold text-event-text group-hover:text-event-primary transition-colors line-clamp-1">
           {event.title}
         </h3>

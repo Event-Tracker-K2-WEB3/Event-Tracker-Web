@@ -21,7 +21,7 @@ export const FilterSidebar = () => {
                 <section className="space-y-4">
                     <div className="flex items-center gap-2 px-1">
                         <MapPin className="text-event-primary" size={18} />
-                        <h3 className="font-semibold text-sm tracking-wider">Lieu</h3>
+                        <h3 className="font-semibold text-sm tracking-wider">Location</h3>
                     </div>
                     <LocationSearch />
                 

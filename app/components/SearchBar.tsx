@@ -56,7 +56,7 @@ const SearchBar = ({ initialValue = '' }: SearchBarProps) => {
     return (
         <InputGroup className="dark bg-background max-w-md rounded-md overflow-hidden border-border focus-within:border-event-primary focus-within:ring-1 focus-within:ring-event-primary/50 transition-all">
             <InputGroupInput
-                placeholder="Rechercher un événement, un sujet, une ville..."
+                placeholder="Search for an event, topic, or city..."
                 value={value}
                 onChange={handleChange}
             />
