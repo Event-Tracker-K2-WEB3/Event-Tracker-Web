@@ -9,7 +9,12 @@ import {
   useRef,
   useState,
 } from "react";
-import { eventService, type Event } from "./services/eventService";
+import {
+  eventService,
+  type Event,
+  type EventSession,
+} from "./services/eventService";
+import { getSessionById } from "./services/sessionService";
 import { getSpeakers } from "./services/speakerService";
 
 const API_BASE_URL =
@@ -21,20 +26,53 @@ type HomeStats = {
   totalSessions: number;
 };
 
+type HeroSession = {
+  id: number;
+  title: string;
+  eventId: string;
+  eventTitle: string;
+  speakerName: string;
+  roomName: string;
+  startTime: string;
+  endTime: string;
+  live: boolean;
+};
+
+function safeDate(dateString?: string | null): Date | null {
+  if (!dateString) return null;
+
+  const date = new Date(dateString);
+
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+
+  return date;
+}
+
 function formatDay(dateString: string): string {
-  return new Date(dateString).getDate().toString().padStart(2, "0");
+  const date = safeDate(dateString);
+  return date ? date.getDate().toString().padStart(2, "0") : "--";
 }
 
 function formatMonth(dateString: string): string {
-  return new Date(dateString)
+  const date = safeDate(dateString);
+
+  if (!date) return "---";
+
+  return date
     .toLocaleDateString("en-US", { month: "short" })
     .replace(".", "")
     .toUpperCase();
 }
 
 function formatEventDate(startDate: string, endDate: string): string {
-  const start = new Date(startDate);
-  const end = new Date(endDate);
+  const start = safeDate(startDate);
+  const end = safeDate(endDate);
+
+  if (!start || !end) {
+    return "Date to be confirmed";
+  }
 
   const startLabel = start.toLocaleDateString("en-US", {
     day: "2-digit",
@@ -50,9 +88,41 @@ function formatEventDate(startDate: string, endDate: string): string {
   return `${startLabel} - ${endLabel}`;
 }
 
+function formatSessionHour(dateString?: string | null): string {
+  const date = safeDate(dateString);
+
+  if (!date) {
+    return "--:--";
+  }
+
+  return date.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
 function isEventLive(startDate: string, endDate: string): boolean {
+  const start = safeDate(startDate);
+  const end = safeDate(endDate);
+
+  if (!start || !end) {
+    return false;
+  }
+
   const now = new Date();
-  return new Date(startDate) <= now && new Date(endDate) >= now;
+  return start <= now && end >= now;
+}
+
+function isSessionLive(startTime: string, endTime: string): boolean {
+  const start = safeDate(startTime);
+  const end = safeDate(endTime);
+
+  if (!start || !end) {
+    return false;
+  }
+
+  const now = new Date();
+  return start <= now && end >= now;
 }
 
 export default function Page() {
@@ -61,6 +131,9 @@ export default function Page() {
   const [pageReady, setPageReady] = useState(false);
 
   const [events, setEvents] = useState<Event[]>([]);
+  const [heroSessions, setHeroSessions] = useState<HeroSession[]>([]);
+  const [activeHeroSessionIndex, setActiveHeroSessionIndex] = useState(0);
+
   const [isLoadingEvents, setIsLoadingEvents] = useState(true);
   const [eventsError, setEventsError] = useState<string | null>(null);
 
@@ -104,6 +177,8 @@ export default function Page() {
     [stats, activeSearch]
   );
 
+  const activeHeroSession = heroSessions[activeHeroSessionIndex] ?? null;
+
   const scrollCarousel = (direction: "left" | "right") => {
     carouselRef.current?.scrollBy({
       left: direction === "right" ? 390 : -390,
@@ -118,35 +193,111 @@ export default function Page() {
     });
   };
 
-  const loadEvents = useCallback(async (query: string = "") => {
+  const loadHeroSessions = useCallback(async (loadedEvents: Event[]) => {
     try {
-      setIsLoadingEvents(true);
-      setEventsError(null);
+      const sessionsByEvent = await Promise.all(
+        loadedEvents.map(async (event) => {
+          try {
+            const eventSessions: EventSession[] =
+              await eventService.getSessionsByEventId(event.id);
 
-      const data = query
-        ? await eventService.searchEvents(query, 1, 8)
-        : await eventService.getAllEvents(1, 8);
+            const sessionsWithDetails = await Promise.all(
+              eventSessions.map(async (session) => {
+                try {
+                  const details = await getSessionById(String(session.id));
 
-      setEvents(data.content);
+                  return {
+                    id: session.id,
+                    title: session.title,
+                    eventId: event.id,
+                    eventTitle: event.title,
+                    speakerName:
+                      details.speakers?.[0]?.name ?? "Speaker to be confirmed",
+                    roomName:
+                      session.roomName ??
+                      details.roomName ??
+                      "Room to be confirmed",
+                    startTime: session.startTime,
+                    endTime: session.endTime,
+                    live:
+                      details.live ??
+                      isSessionLive(session.startTime, session.endTime),
+                  };
+                } catch {
+                  return {
+                    id: session.id,
+                    title: session.title,
+                    eventId: event.id,
+                    eventTitle: event.title,
+                    speakerName: "Speaker to be confirmed",
+                    roomName: session.roomName ?? "Room to be confirmed",
+                    startTime: session.startTime,
+                    endTime: session.endTime,
+                    live: isSessionLive(session.startTime, session.endTime),
+                  };
+                }
+              })
+            );
 
-      setStats((previousStats) => ({
-        ...previousStats,
-        totalEvents: data.totalElements,
-      }));
+            return sessionsWithDetails;
+          } catch {
+            return [];
+          }
+        })
+      );
+
+      const flattenedSessions = sessionsByEvent
+        .flat()
+        .sort(
+          (a, b) =>
+            new Date(a.startTime).getTime() -
+            new Date(b.startTime).getTime()
+        );
+
+      setHeroSessions(flattenedSessions);
+      setActiveHeroSessionIndex(0);
     } catch (error) {
-      console.error("Error loading events:", error);
-
-      setEvents([]);
-      setEventsError("Unable to load events.");
-
-      setStats((previousStats) => ({
-        ...previousStats,
-        totalEvents: 0,
-      }));
-    } finally {
-      setIsLoadingEvents(false);
+      console.error("Error loading hero sessions:", error);
+      setHeroSessions([]);
+      setActiveHeroSessionIndex(0);
     }
   }, []);
+
+  const loadEvents = useCallback(
+    async (query: string = "") => {
+      try {
+        setIsLoadingEvents(true);
+        setEventsError(null);
+
+        const data = query
+          ? await eventService.searchEvents(query, 1, 8)
+          : await eventService.getAllEvents(1, 8);
+
+        setEvents(data.content);
+
+        await loadHeroSessions(data.content);
+
+        setStats((previousStats) => ({
+          ...previousStats,
+          totalEvents: data.totalElements,
+        }));
+      } catch (error) {
+        console.error("Error loading events:", error);
+
+        setEvents([]);
+        setHeroSessions([]);
+        setEventsError("Unable to load events.");
+
+        setStats((previousStats) => ({
+          ...previousStats,
+          totalEvents: 0,
+        }));
+      } finally {
+        setIsLoadingEvents(false);
+      }
+    },
+    [loadHeroSessions]
+  );
 
   const loadSpeakers = useCallback(async () => {
     try {
@@ -166,25 +317,25 @@ export default function Page() {
     }
   }, []);
 
-  const loadSessionsCount = useCallback(async () => {
+  const loadStats = useCallback(async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/about/stats`, {
         cache: "no-store",
       });
-  
+
       if (!response.ok) {
-        throw new Error(`Error loading sessions count: ${response.status}`);
+        throw new Error(`Error loading stats: ${response.status}`);
       }
-  
+
       const data = await response.json();
-  
+
       setStats((previousStats) => ({
         ...previousStats,
         totalSessions: data.totalSessions ?? 0,
       }));
     } catch (error) {
-      console.error("Error loading sessions count:", error);
-  
+      console.error("Error loading stats:", error);
+
       setStats((previousStats) => ({
         ...previousStats,
         totalSessions: 0,
@@ -203,26 +354,22 @@ export default function Page() {
   useEffect(() => {
     loadEvents();
     loadSpeakers();
-    loadSessionsCount();
-  }, [loadEvents, loadSpeakers, loadSessionsCount]);
+    loadStats();
+  }, [loadEvents, loadSpeakers, loadStats]);
 
-  const handleSearch = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  useEffect(() => {
+    if (heroSessions.length <= 1) {
+      return;
+    }
 
-    const normalizedSearch = searchTerm.trim();
+    const interval = window.setInterval(() => {
+      setActiveHeroSessionIndex((currentIndex) => {
+        return (currentIndex + 1) % heroSessions.length;
+      });
+    }, 7000);
 
-    setActiveSearch(normalizedSearch);
-    await loadEvents(normalizedSearch);
-    resetCarouselPosition();
-  };
-
-  const handleResetSearch = async () => {
-    setSearchTerm("");
-    setActiveSearch("");
-
-    await loadEvents();
-    resetCarouselPosition();
-  };
+    return () => window.clearInterval(interval);
+  }, [heroSessions.length]);
 
   useEffect(() => {
     const interval = window.setInterval(() => {
@@ -255,6 +402,24 @@ export default function Page() {
 
     return () => window.clearInterval(interval);
   }, []);
+
+  const handleSearch = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const normalizedSearch = searchTerm.trim();
+
+    setActiveSearch(normalizedSearch);
+    await loadEvents(normalizedSearch);
+    resetCarouselPosition();
+  };
+
+  const handleResetSearch = async () => {
+    setSearchTerm("");
+    setActiveSearch("");
+
+    await loadEvents();
+    resetCarouselPosition();
+  };
 
   return (
     <main
@@ -292,6 +457,19 @@ export default function Page() {
             }
             50% {
               box-shadow: 0 0 55px rgba(168, 85, 247, 0.28);
+            }
+          }
+
+          @keyframes sessionCardChange {
+            from {
+              opacity: 0;
+              transform: translateY(14px) scale(0.97);
+              filter: blur(6px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0) scale(1);
+              filter: blur(0);
             }
           }
 
@@ -365,6 +543,10 @@ export default function Page() {
 
           .home-glow-card {
             animation: softGlow 4s ease-in-out infinite;
+          }
+
+          .session-card-change {
+            animation: sessionCardChange 650ms ease-out both;
           }
         `}
       </style>
@@ -451,36 +633,72 @@ export default function Page() {
             <div className="absolute inset-0 bg-[linear-gradient(90deg,#050817_0%,rgba(5,8,23,0.92)_8%,rgba(5,8,23,0.55)_18%,rgba(5,8,23,0.12)_32%,transparent_45%)]" />
 
             <div className="home-reveal home-delay-600 home-floating-card absolute bottom-[28px] right-[26px] mr-12 w-[355px] rounded-[22px] border border-white/20 bg-[#0b0c1f]/55 p-6 shadow-[0_24px_80px_rgba(0,0,0,0.52)] backdrop-blur-[18px]">
-              <div className="mb-4 flex items-center gap-2 text-[12px] font-bold uppercase tracking-[0.06em] text-slate-200">
-                <span className="h-2 w-2 rounded-full bg-[#ff4d6d]" />
-                Happening now
-              </div>
+              {activeHeroSession ? (
+                <div
+                  key={`${activeHeroSession.id}-${activeHeroSessionIndex}`}
+                  className="session-card-change"
+                >
+                  <div className="mb-4 flex items-center gap-2 text-[12px] font-bold uppercase tracking-[0.06em] text-slate-200">
+                    <span
+                      className={`h-2 w-2 rounded-full ${
+                        activeHeroSession.live
+                          ? "bg-[#ff4d6d]"
+                          : "bg-[#a855f7]"
+                      }`}
+                    />
+                    {activeHeroSession.live ? "Happening now" : "Coming soon"}
+                  </div>
 
-              <h2 className="text-[20px] font-bold leading-tight text-white">
-                The future of generative AI
-              </h2>
+                  <h2 className="text-[20px] font-bold leading-tight text-white">
+                    {activeHeroSession.title}
+                  </h2>
 
-              <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-[13px] text-slate-300">
-                <span className="flex items-center gap-2">
-                  <UserIcon />
-                  Claire Martin
-                </span>
+                  <p className="mt-2 line-clamp-1 text-[12px] font-medium text-violet-300">
+                    {activeHeroSession.eventTitle}
+                  </p>
 
-                <span className="flex items-center gap-2">
-                  <PinIcon />
-                  Room A
-                </span>
-              </div>
+                  <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-[13px] text-slate-300">
+                    <span className="flex items-center gap-2">
+                      <UserIcon />
+                      {activeHeroSession.speakerName}
+                    </span>
 
-              <div className="mt-4 flex items-center gap-2 text-[13px] text-slate-300">
-                <ClockIcon />
-                10:15 - 11:00
-              </div>
+                    <span className="flex items-center gap-2">
+                      <PinIcon />
+                      {activeHeroSession.roomName}
+                    </span>
+                  </div>
 
-              <button className="mt-6 flex h-[48px] w-full items-center justify-center gap-3 rounded-xl border border-[#b65cff]/70 bg-white/[0.01] text-[14px] font-semibold text-white transition duration-300 hover:-translate-y-0.5 hover:bg-white/[0.06]">
-                <ArrowIcon />
-                View live session
-              </button>
+                  <div className="mt-4 flex items-center gap-2 text-[13px] text-slate-300">
+                    <ClockIcon />
+                    {formatSessionHour(activeHeroSession.startTime)} -{" "}
+                    {formatSessionHour(activeHeroSession.endTime)}
+                  </div>
+
+                  <a
+                    href={`/sessions/${activeHeroSession.id}`}
+                    className="mt-6 flex h-[48px] w-full items-center justify-center gap-3 rounded-xl border border-[#b65cff]/70 bg-white/[0.01] text-[14px] font-semibold text-white transition duration-300 hover:-translate-y-0.5 hover:bg-white/[0.06]"
+                  >
+                    <ArrowIcon />
+                    {activeHeroSession.live ? "View live session" : "View session"}
+                  </a>
+                </div>
+              ) : (
+                <div className="session-card-change">
+                  <div className="mb-4 flex items-center gap-2 text-[12px] font-bold uppercase tracking-[0.06em] text-slate-200">
+                    <span className="h-2 w-2 rounded-full bg-[#a855f7]" />
+                    Sessions
+                  </div>
+
+                  <h2 className="text-[20px] font-bold leading-tight text-white">
+                    No session available
+                  </h2>
+
+                  <p className="mt-4 text-[13px] leading-6 text-slate-300">
+                    Sessions will appear here once they are available.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -668,7 +886,10 @@ export default function Page() {
         <div className="mx-auto max-w-7xl px-6 py-12">
           <div className="grid grid-cols-1 gap-8 md:grid-cols-5">
             <div className="md:col-span-2">
-              <a href="/" className="mb-4 flex items-center gap-2 text-xl font-bold">
+              <a
+                href="/"
+                className="mb-4 flex items-center gap-2 text-xl font-bold"
+              >
                 <span className="grid size-10 place-items-center">
                   <img src="/logo-event-tracker.png" alt="" />
                 </span>
@@ -829,9 +1050,10 @@ function MiniCalendarIcon() {
   return (
     <svg width="21" height="21" viewBox="0 0 24 24" fill="none">
       <path
-        d="M8 2V5M16 2V5M4 9H20M6 4H18C19.1046 4 20 4.89543 20 6V19C20 20.1046 19.1046 21 18 21H6C4.89543 21 4 20.1046 4 19V6C4 4.89543 4 6 4 6Z"
+        d="M8 2V5M16 2V5M4 9H20M6 4H18C19.1046 4 20 4.89543 20 6V19C20 20.1046 19.1046 21 18 21H6C4.89543 21 4 20.1046 4 19V6C4 4.89543 4.89543 4 6 4Z"
         stroke="currentColor"
         strokeWidth="2"
+        strokeLinecap="round"
       />
     </svg>
   );
