@@ -1,0 +1,106 @@
+const API_BASE_URL = 'http://localhost:8080';
+
+export interface Event {
+  id: string;
+  title: string;
+  description: string;
+  startDate: string;
+  endDate: string;
+  location: string;
+}
+
+export interface PaginatedResponse {
+  content: Event[];
+  totalElements: number;
+  totalPages: number;
+  number: number;
+  size: number;
+  first: boolean;
+  last: boolean;
+  empty: boolean;
+}
+
+export interface EventSpeaker {
+  id: number;
+  name: string;
+  role: string;
+  photo: string | null;
+  initials?: string;
+}
+
+export interface EventSession {
+  id: number;
+  title: string;
+  description: string;
+  startTime: string;
+  endTime: string;
+  roomId: number | null;
+  roomName: string | null;
+}
+
+export const eventService = {
+  getAllEvents: async (page: number = 1, limit: number = 8, search?: string, date?: string, location?: string): Promise<PaginatedResponse> => {
+    let url = `${API_BASE_URL}/events?page=${page}&size=${limit}`;
+    if (search && search.trim()) {
+      url += `&q=${encodeURIComponent(search)}`;
+    }
+    if (date && date !== "all") {
+      url += `&date=${encodeURIComponent(date)}`;
+    }
+    if (location && location.trim()) {
+      url += `&location=${encodeURIComponent(location)}`;
+    }
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status}`);
+    }
+    return response.json()
+  },
+
+  getEventById: async (id: string): Promise<Event> => {
+    const response = await fetch(`${API_BASE_URL}/events/${id}`);
+
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status}`);
+    }
+
+    return response.json();
+  },
+
+  searchEvents: async (
+    query: string,
+    page: number = 1,
+    limit: number = 8
+  ): Promise<PaginatedResponse> => {
+    const response = await fetch(
+      `${API_BASE_URL}/events?page=${page}&size=${limit}&q=${encodeURIComponent(query)}`
+    );
+
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status}`);
+    }
+
+    return response.json();
+  },
+
+  getSpeakersByEventId: async (eventId: string): Promise<EventSpeaker[]> => {
+    const response = await fetch(`${API_BASE_URL}/events/${eventId}/speakers`);
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status}`);
+    }
+    return response.json();  // ← Must match EventSpeaker
+  },
+
+  getSessionsByEventId: async (eventId: string): Promise<EventSession[]> => {
+    const response = await fetch(`${API_BASE_URL}/events/${eventId}/sessions`, {
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch event sessions: ${response.status}`);
+    }
+
+    return response.json();
+  },
+
+};
