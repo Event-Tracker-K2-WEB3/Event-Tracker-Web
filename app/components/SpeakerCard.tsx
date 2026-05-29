@@ -114,7 +114,7 @@ export default function SpeakerCard({ speaker, index }: SpeakerCardProps) {
   const shouldShowPhoto = photoSource && !imageError;
 
   return (
-    <article className="group relative overflow-hidden rounded-2xl border border-white/10 bg-[#0f1220]/80 p-3 transition-all duration-500 hover:-translate-y-1 hover:border-violet-400/60 hover:bg-[#151a2e]/90 hover:shadow-[0_0_35px_rgba(139,92,246,0.25)]">
+    <article className="group premium-card-hover relative overflow-hidden rounded-2xl border border-white/10 bg-[#0f1220]/80 p-3 transition-all duration-500 hover:-translate-y-1 hover:border-violet-400/60 hover:bg-[#151a2e]/90 hover:shadow-[0_0_35px_rgba(139,92,246,0.25)]">
       <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
         <div className="absolute -right-20 -top-20 h-40 w-40 rounded-full bg-violet-600/20 blur-3xl" />
       </div>
@@ -193,14 +193,14 @@ export default function SpeakerCard({ speaker, index }: SpeakerCardProps) {
                 href={`/speakers/${speaker.id}`}
                 className="rounded-lg border border-violet-500/60 px-3 py-2 text-center text-xs font-semibold text-white transition hover:bg-violet-600"
               >
-                Voir le profil
+                View profile
               </Link>
 
               <Link
                 href={`/speakers/${speaker.id}#sessions`}
                 className="rounded-lg bg-violet-700/70 px-3 py-2 text-center text-xs font-semibold text-white transition hover:bg-violet-600"
               >
-                Voir les sessions
+                View sessions
               </Link>
             </div>
           </div>

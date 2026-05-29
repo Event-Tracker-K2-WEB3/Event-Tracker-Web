@@ -49,7 +49,7 @@ export async function getRooms(): Promise<Room[]> {
   });
 
   if (!res.ok) {
-    throw new Error(`Erreur récupération des salles : ${res.status}`);
+    throw new Error(`Error fetching rooms: ${res.status}`);
   }
 
   return res.json();
@@ -61,7 +61,7 @@ export async function getRoomById(id: number): Promise<Room> {
   const room = rooms.find((room) => room.id === id);
 
   if (!room) {
-    throw new Error("Salle introuvable");
+    throw new Error("Room not found");
   }
 
   return room;

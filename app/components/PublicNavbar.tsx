@@ -9,10 +9,10 @@ import { useState } from "react";
 import MobileNavMenu from "./MobileNavMenu";
 
 const navLinks = [
-  { label: "Accueil", href: "/" },
-  { label: "Événements", href: "/events" },
-  { label: "Intervenants", href: "/speakers" },
-  { label: "À propos", href: "/about" },
+  { label: "Home", href: "/" },
+  { label: "Events", href: "/events" },
+  { label: "Speakers", href: "/speakers" },
+  { label: "About", href: "/about" },
 ];
 
 export default function PublicNavbar() {
@@ -62,13 +62,13 @@ export default function PublicNavbar() {
             className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-event-primary to-event-secondary px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-event-primary/25 transition hover:scale-[1.02]"
           >
             <Calendar size={16} />
-            <span>Voir le programme</span>
+            <span>View program</span>
           </Link>
         <div className="flex items-center gap-2">
 
           <Link
               href="/favorites"
-              title="Voir mes favoris"
+              title="View my favorites"
               className="grid size-[42px] shrink-0 place-items-center rounded-xl border border-event-border bg-event-surface/50 text-event-text transition hover:border-purple-500/50 hover:text-purple-400 backdrop-blur-md shadow-md"
           >
             <Heart size={18} className="fill-purple-500/20" />
@@ -81,7 +81,7 @@ export default function PublicNavbar() {
           type="button"
           onClick={() => setIsOpen((value) => !value)}
           className="grid size-11 place-items-center rounded-xl border border-event-border bg-event-surface text-event-text lg:hidden"
-          aria-label="Ouvrir le menu mobile"
+          aria-label="Open mobile menu"
           aria-expanded={isOpen}
         >
           <span className="flex flex-col gap-1.5">

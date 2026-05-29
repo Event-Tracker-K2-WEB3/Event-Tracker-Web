@@ -29,7 +29,7 @@ export default async function PlanningPage({ params }: Props) {
       />
     );
   } catch (error) {
-    console.error("Erreur chargement planning global :", error);
+    console.error("Error loading global schedule:", error);
     notFound();
   }
 }
