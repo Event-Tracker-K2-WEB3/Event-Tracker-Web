@@ -846,8 +846,8 @@ export default function Page() {
       </section>
 
       {/* STATS */}
-      <section className="bg-[#08101f] pb-6">
-        <div className="mx-auto w-full max-w-[1360px] px-6 lg:px-0">
+      <section className="bg-[#08101f] py-12">
+        <div className="relative mx-auto w-full px-6 lg:px-[88px]">
           <div className="home-reveal home-delay-300 home-glow-card flex flex-col gap-8 rounded-[22px] border border-[#9b59ff]/40 bg-[linear-gradient(90deg,rgba(27,22,52,0.92),rgba(25,27,57,0.92))] px-7 py-5 shadow-[0_20px_60px_rgba(0,0,0,0.22)] lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-center gap-5">
               <div className="flex h-[62px] w-[62px] shrink-0 items-center justify-center rounded-full bg-[#2c1b68] text-[#9d5cff]">
