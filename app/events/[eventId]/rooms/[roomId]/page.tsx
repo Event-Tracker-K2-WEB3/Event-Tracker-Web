@@ -1,9 +1,16 @@
 import { notFound } from "next/navigation";
 
 import RoomPlanningExplorer from "@/app/components/RoomPlanningExplorer";
-import { eventService } from "@/app/services/eventService";
-import { getRooms } from "@/app/services/roomService";
-import { getSessionsByRoom } from "@/app/services/sessionService";
+import {
+  eventService,
+  type Event,
+  type EventSession,
+} from "@/app/services/eventService";
+import {
+  getRooms,
+  type Room,
+  type RoomSession,
+} from "@/app/services/roomService";
 
 interface Props {
   params: Promise<{
@@ -12,11 +19,60 @@ interface Props {
   }>;
 }
 
-function getSessionEventId(session: {
-  event?: { id?: string } | null;
-  eventId?: string;
-}) {
-  return session.eventId ?? session.event?.id ?? null;
+type EventSessionWithExtra = EventSession & {
+  type?: string | null;
+  capacity?: number | null;
+};
+
+function convertToRoomSession(
+  session: EventSessionWithExtra,
+  event: Event
+): RoomSession {
+  return {
+    id: session.id,
+    title: session.title,
+    description: session.description,
+    startTime: session.startTime,
+    endTime: session.endTime,
+    type: session.type ?? "Session",
+    capacity: session.capacity ?? null,
+    event: {
+      id: event.id,
+      title: event.title,
+      description: event.description,
+      startDate: event.startDate,
+      endDate: event.endDate,
+      location: event.location,
+    },
+    speaker: null,
+  };
+}
+
+function buildRoomsFromEventSessions(
+  existingRooms: Room[],
+  sessions: EventSessionWithExtra[]
+): Room[] {
+  const roomsMap = new Map<number, Room>();
+
+  existingRooms.forEach((room) => {
+    roomsMap.set(room.id, room);
+  });
+
+  sessions.forEach((session) => {
+    if (session.roomId === null) {
+      return;
+    }
+
+    if (!roomsMap.has(session.roomId)) {
+      roomsMap.set(session.roomId, {
+        id: session.roomId,
+        name: session.roomName ?? `Room ${session.roomId}`,
+        sessions: [],
+      });
+    }
+  });
+
+  return Array.from(roomsMap.values()).sort((a, b) => a.id - b.id);
 }
 
 export default async function RoomPlanningPage({ params }: Props) {
@@ -29,21 +85,38 @@ export default async function RoomPlanningPage({ params }: Props) {
   }
 
   try {
-    const [event, rooms, sessionsByRoom] = await Promise.all([
+    const [event, roomsFromApi, eventSessions] = await Promise.all([
       eventService.getEventById(eventId),
-      getRooms(),
-      getSessionsByRoom(roomIdNumeric),
+      getRooms().catch(() => []),
+      eventService.getSessionsByEventId(eventId),
     ]);
 
-    const activeRoom = rooms.find((room) => room.id === roomIdNumeric);
+    const sessionsWithExtra = eventSessions as EventSessionWithExtra[];
 
-    if (!activeRoom) {
-      notFound();
-    }
+    const rooms = buildRoomsFromEventSessions(
+      roomsFromApi,
+      sessionsWithExtra
+    );
 
-    const roomSessions = sessionsByRoom
-      .filter((session) => getSessionEventId(session) === eventId)
-      .filter((session) => session.startTime && session.endTime)
+    const activeRoomFromApi = rooms.find(
+      (room) => room.id === roomIdNumeric
+    );
+
+    const firstSessionOfRoom = sessionsWithExtra.find(
+      (session) => session.roomId === roomIdNumeric
+    );
+
+    const activeRoom: Room =
+      activeRoomFromApi ??
+      {
+        id: roomIdNumeric,
+        name: firstSessionOfRoom?.roomName ?? `Room ${roomIdNumeric}`,
+        sessions: [],
+      };
+
+    const roomSessions = sessionsWithExtra
+      .filter((session) => session.roomId === roomIdNumeric)
+      .map((session) => convertToRoomSession(session, event))
       .sort(
         (a, b) =>
           new Date(a.startTime).getTime() -
