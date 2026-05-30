@@ -2,8 +2,10 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   Armchair,
+  ArrowLeft,
   Building2,
   CalendarDays,
   ChevronDown,
@@ -236,6 +238,22 @@ export default function RoomPlanningExplorer({
 
         <div className="event-container relative flex min-h-[218px] items-center py-8">
           <div className="max-w-[620px]">
+            <div className="mb-5 flex flex-wrap gap-3">
+              <Link
+                href={`/events/${event.id}/planning`}
+                className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/[0.03] px-4 py-2 text-sm font-semibold text-slate-200 transition hover:border-violet-400/60 hover:bg-white/[0.07] hover:text-white"
+              >
+                <ArrowLeft size={16} />
+                Back to global schedule
+              </Link>
+
+              <Link
+                href={`/events/${event.id}`}
+                className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.02] px-4 py-2 text-sm font-semibold text-slate-300 transition hover:border-violet-400/50 hover:bg-white/[0.06] hover:text-white"
+              >
+                Back to event
+              </Link>
+            </div>
             <div className="mb-5 inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/[0.03] px-3 py-1.5 text-[12px] font-bold uppercase tracking-[0.03em] text-slate-200">
               <CalendarDays size={15} />
               Room schedule

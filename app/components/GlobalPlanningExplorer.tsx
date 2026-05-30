@@ -1,12 +1,14 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import {
-  Building2,
+  ArrowLeft,
   CalendarDays,
   ChevronDown,
   Filter,
   UserRound,
+  Building2,
   UsersRound,
 } from "lucide-react";
 
@@ -384,6 +386,13 @@ export default function GlobalPlanningExplorer({
 
         <div className="event-container relative flex min-h-[270px] items-center py-8">
           <div className="max-w-[760px]">
+            <Link
+              href={`/events/${event.id}`}
+              className="mb-5 inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/[0.03] px-4 py-2 text-sm font-semibold text-slate-200 transition hover:border-violet-400/60 hover:bg-white/[0.07] hover:text-white"
+            >
+              <ArrowLeft size={16} />
+              Back to event
+            </Link>
             <div className="mb-5 inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/[0.03] px-3 py-1.5 text-[12px] font-bold uppercase tracking-[0.03em] text-slate-200">
               <CalendarDays size={15} />
               Global schedule
