@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -29,26 +29,17 @@ type DayOption = {
 };
 
 function safeDate(dateValue?: string | Date | null): Date | null {
-  if (!dateValue) {
-    return null;
-  }
+  if (!dateValue) return null;
 
   const date =
     typeof dateValue === "string" ? new Date(dateValue) : dateValue;
 
-  if (Number.isNaN(date.getTime())) {
-    return null;
-  }
-
-  return date;
+  return Number.isNaN(date.getTime()) ? null : date;
 }
 
 function dateKey(dateValue?: string | Date | null): string {
   const date = safeDate(dateValue);
-
-  if (!date) {
-    return "";
-  }
+  if (!date) return "";
 
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -58,26 +49,17 @@ function dateKey(dateValue?: string | Date | null): string {
 }
 
 function formatDayLabel(date: Date): string {
-  const day = date.toLocaleDateString("en-US", {
-    day: "numeric",
-  });
+  const day = date.toLocaleDateString("en-US", { day: "numeric" });
+  const month = date.toLocaleDateString("en-US", { month: "long" });
 
-  const month = date.toLocaleDateString("en-US", {
-    month: "long",
-  });
-
-  const capitalizedMonth = month.charAt(0).toUpperCase() + month.slice(1);
-
-  return `${day} ${capitalizedMonth}`;
+  return `${day} ${month.charAt(0).toUpperCase()}${month.slice(1)}`;
 }
 
 function getEventDays(startDate: string, endDate: string): DayOption[] {
   const start = safeDate(startDate);
   const end = safeDate(endDate);
 
-  if (!start || !end) {
-    return [];
-  }
+  if (!start || !end) return [];
 
   start.setHours(0, 0, 0, 0);
   end.setHours(0, 0, 0, 0);
@@ -102,10 +84,7 @@ function getSessionDays(sessions: RoomSession[]): DayOption[] {
 
   sessions.forEach((session) => {
     const date = safeDate(session.startTime);
-
-    if (!date) {
-      return;
-    }
+    if (!date) return;
 
     const key = dateKey(date);
 
@@ -120,15 +99,10 @@ function getSessionDays(sessions: RoomSession[]): DayOption[] {
   );
 }
 
-function getPlanningDays(
-  event: Event,
-  sessions: RoomSession[]
-): DayOption[] {
+function getPlanningDays(event: Event, sessions: RoomSession[]): DayOption[] {
   const sessionDays = getSessionDays(sessions);
 
-  if (sessionDays.length > 0) {
-    return sessionDays;
-  }
+  if (sessionDays.length > 0) return sessionDays;
 
   return getEventDays(event.startDate, event.endDate);
 }
@@ -142,10 +116,7 @@ function getDefaultActiveDay(days: DayOption[]): string {
 
 function formatHour(dateString?: string | null): string {
   const date = safeDate(dateString);
-
-  if (!date) {
-    return "--:--";
-  }
+  if (!date) return "--:--";
 
   return date.toLocaleTimeString("en-US", {
     hour: "2-digit",
@@ -160,9 +131,7 @@ function isSessionLive(
   const start = safeDate(startTime);
   const end = safeDate(endTime);
 
-  if (!start || !end) {
-    return false;
-  }
+  if (!start || !end) return false;
 
   const now = new Date();
 
@@ -180,6 +149,15 @@ export default function RoomPlanningExplorer({
   sessions,
 }: RoomPlanningExplorerProps) {
   const router = useRouter();
+  const [pageReady, setPageReady] = useState(false);
+
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      setPageReady(true);
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
 
   const days = useMemo(
     () => getPlanningDays(event, sessions),
@@ -193,9 +171,7 @@ export default function RoomPlanningExplorer({
   const visibleSessions = useMemo(() => {
     return sessions
       .filter((session) => {
-        if (!activeDay) {
-          return true;
-        }
+        if (!activeDay) return true;
 
         return dateKey(session.startTime) === activeDay;
       })
@@ -211,9 +187,7 @@ export default function RoomPlanningExplorer({
       .map((session) => session.capacity)
       .filter((capacity): capacity is number => typeof capacity === "number");
 
-    if (capacities.length === 0) {
-      return null;
-    }
+    if (capacities.length === 0) return null;
 
     return Math.max(...capacities);
   }, [visibleSessions]);
@@ -223,11 +197,98 @@ export default function RoomPlanningExplorer({
   };
 
   return (
-    <main className="min-h-[calc(100vh-76px)] bg-[#06101f] text-white">
+    <main
+      className={`min-h-[calc(100vh-76px)] bg-[#06101f] text-white ${
+        pageReady ? "room-page-ready" : ""
+      }`}
+    >
+      <style>
+        {`
+          @keyframes roomFadeUp {
+            from {
+              opacity: 0;
+              transform: translateY(28px);
+              filter: blur(8px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+              filter: blur(0);
+            }
+          }
+
+          @keyframes roomScaleIn {
+            from {
+              opacity: 0;
+              transform: scale(0.97);
+              filter: blur(8px);
+            }
+            to {
+              opacity: 1;
+              transform: scale(1);
+              filter: blur(0);
+            }
+          }
+
+          @keyframes roomSessionPop {
+            from {
+              opacity: 0;
+              transform: translateY(14px) scale(0.97);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0) scale(1);
+            }
+          }
+
+          .room-reveal {
+            opacity: 0;
+            transform: translateY(28px);
+            filter: blur(8px);
+            transition:
+              opacity 750ms ease,
+              transform 750ms ease,
+              filter 750ms ease;
+          }
+
+          .room-page-ready .room-reveal {
+            opacity: 1;
+            transform: translateY(0);
+            filter: blur(0);
+          }
+
+          .room-scale {
+            opacity: 0;
+            transform: scale(0.97);
+            filter: blur(8px);
+            transition:
+              opacity 850ms ease,
+              transform 850ms ease,
+              filter 850ms ease;
+          }
+
+          .room-page-ready .room-scale {
+            opacity: 1;
+            transform: scale(1);
+            filter: blur(0);
+          }
+
+          .room-delay-100 { transition-delay: 100ms; }
+          .room-delay-200 { transition-delay: 200ms; }
+          .room-delay-300 { transition-delay: 300ms; }
+          .room-delay-400 { transition-delay: 400ms; }
+          .room-delay-500 { transition-delay: 500ms; }
+
+          .room-session-pop {
+            animation: roomSessionPop 520ms ease-out both;
+          }
+        `}
+      </style>
+
       {/* HERO */}
       <section className="relative overflow-hidden border-b border-white/5 bg-[#050817]">
         <div
-          className="absolute inset-y-0 right-0 hidden w-[58%] bg-cover bg-center lg:block"
+          className="room-scale room-delay-200 absolute inset-y-0 right-0 hidden w-[58%] bg-cover bg-center lg:block"
           style={{
             backgroundImage:
               "url('/tech-summit-conference-crowd-stage-purple-hero.png')",
@@ -238,7 +299,7 @@ export default function RoomPlanningExplorer({
 
         <div className="event-container relative flex min-h-[218px] items-center py-8">
           <div className="max-w-[620px]">
-            <div className="mb-5 flex flex-wrap gap-3">
+            <div className="room-reveal room-delay-100 mb-5 flex flex-wrap gap-3">
               <Link
                 href={`/events/${event.id}/planning`}
                 className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/[0.03] px-4 py-2 text-sm font-semibold text-slate-200 transition hover:border-violet-400/60 hover:bg-white/[0.07] hover:text-white"
@@ -254,16 +315,17 @@ export default function RoomPlanningExplorer({
                 Back to event
               </Link>
             </div>
-            <div className="mb-5 inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/[0.03] px-3 py-1.5 text-[12px] font-bold uppercase tracking-[0.03em] text-slate-200">
+
+            <div className="room-reveal room-delay-200 mb-5 inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/[0.03] px-3 py-1.5 text-[12px] font-bold uppercase tracking-[0.03em] text-slate-200">
               <CalendarDays size={15} />
               Room schedule
             </div>
 
-            <h1 className="text-[42px] font-extrabold leading-none tracking-[-0.04em] text-white md:text-[52px]">
+            <h1 className="room-reveal room-delay-300 text-[42px] font-extrabold leading-none tracking-[-0.04em] text-white md:text-[52px]">
               {activeRoom.name}
             </h1>
 
-            <p className="mt-4 max-w-[540px] text-[16px] leading-7 text-slate-300">
+            <p className="room-reveal room-delay-400 mt-4 max-w-[540px] text-[16px] leading-7 text-slate-300">
               Explore all sessions scheduled in this room for {event.title}.
             </p>
           </div>
@@ -273,7 +335,7 @@ export default function RoomPlanningExplorer({
       {/* CONTENT */}
       <section className="event-container py-5">
         {/* FILTERS */}
-        <div className="mb-6 flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
+        <div className="room-reveal room-delay-200 mb-6 flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
           <div className="inline-flex w-fit overflow-hidden rounded-xl border border-white/15 bg-white/[0.03]">
             {days.length === 0 ? (
               <button
@@ -337,14 +399,14 @@ export default function RoomPlanningExplorer({
         {/* MAIN GRID */}
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
           {/* SESSIONS */}
-          <div>
+          <div className="room-scale room-delay-300">
             {visibleSessions.length === 0 ? (
               <div className="flex min-h-[280px] items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] px-6 text-center text-slate-300">
                 No session is scheduled in this room for this date.
               </div>
             ) : (
               <div className="space-y-2.5">
-                {visibleSessions.map((session) => {
+                {visibleSessions.map((session, index) => {
                   const live = isSessionLive(
                     session.startTime,
                     session.endTime
@@ -354,8 +416,9 @@ export default function RoomPlanningExplorer({
                     <a
                       key={session.id}
                       href={`/sessions/${session.id}`}
+                      style={{ animationDelay: `${index * 90}ms` }}
                       className={[
-                        "group flex flex-col gap-4 rounded-2xl border px-4 py-3.5 transition hover:-translate-y-0.5 md:flex-row md:items-center md:justify-between",
+                        "room-session-pop group flex flex-col gap-4 rounded-2xl border px-4 py-3.5 transition hover:-translate-y-0.5 md:flex-row md:items-center md:justify-between",
                         live
                           ? "border-[#ff334f]/70 bg-[linear-gradient(90deg,rgba(255,51,79,0.16),rgba(20,25,47,0.92))] shadow-[0_10px_35px_rgba(255,51,79,0.18)]"
                           : "border-white/15 bg-[#0d1526]/85 hover:border-violet-400/45",
@@ -423,7 +486,7 @@ export default function RoomPlanningExplorer({
           </div>
 
           {/* ROOM CARD */}
-          <aside className="h-fit rounded-2xl border border-violet-400/45 bg-[#0d1526]/88 p-5 shadow-[0_20px_60px_rgba(0,0,0,0.24)]">
+          <aside className="room-scale room-delay-400 h-fit rounded-2xl border border-violet-400/45 bg-[#0d1526]/88 p-5 shadow-[0_20px_60px_rgba(0,0,0,0.24)]">
             <div className="flex items-center gap-4">
               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[linear-gradient(145deg,#33206e,#18153b)] text-fuchsia-300">
                 <Armchair size={28} />

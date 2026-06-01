@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -44,15 +44,11 @@ type PlanningRoom = {
 };
 
 function safeDate(value?: string | Date | null): Date | null {
-  if (!value) {
-    return null;
-  }
+  if (!value) return null;
 
   const date = value instanceof Date ? value : new Date(value);
 
-  if (Number.isNaN(date.getTime())) {
-    return null;
-  }
+  if (Number.isNaN(date.getTime())) return null;
 
   return date;
 }
@@ -60,9 +56,7 @@ function safeDate(value?: string | Date | null): Date | null {
 function dateKey(dateValue?: string | Date | null): string {
   const date = safeDate(dateValue);
 
-  if (!date) {
-    return "";
-  }
+  if (!date) return "";
 
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -72,13 +66,8 @@ function dateKey(dateValue?: string | Date | null): string {
 }
 
 function formatPlanningDay(date: Date): string {
-  const day = date.toLocaleDateString("en-US", {
-    day: "numeric",
-  });
-
-  const month = date.toLocaleDateString("en-US", {
-    month: "long",
-  });
+  const day = date.toLocaleDateString("en-US", { day: "numeric" });
+  const month = date.toLocaleDateString("en-US", { month: "long" });
 
   return `${day} ${month.charAt(0).toUpperCase()}${month.slice(1)}`;
 }
@@ -86,9 +75,7 @@ function formatPlanningDay(date: Date): string {
 function formatHour(dateString?: string | null): string {
   const date = safeDate(dateString);
 
-  if (!date) {
-    return "--:--";
-  }
+  if (!date) return "--:--";
 
   return date.toLocaleTimeString("en-US", {
     hour: "2-digit",
@@ -100,9 +87,7 @@ function formatEventDateRange(startDate: string, endDate: string): string {
   const start = safeDate(startDate);
   const end = safeDate(endDate);
 
-  if (!start || !end) {
-    return "date to be confirmed";
-  }
+  if (!start || !end) return "date to be confirmed";
 
   const startDay = start.toLocaleDateString("en-US", {
     day: "numeric",
@@ -122,9 +107,7 @@ function isSessionLive(startTime: string, endTime: string): boolean {
   const start = safeDate(startTime);
   const end = safeDate(endTime);
 
-  if (!start || !end) {
-    return false;
-  }
+  if (!start || !end) return false;
 
   const now = new Date();
 
@@ -136,11 +119,7 @@ function getRoomId(session: PlanningSession): number | null {
 }
 
 function getRoomName(session: PlanningSession): string {
-  return (
-    session.roomName ??
-    session.room?.name ??
-    "Room to be confirmed"
-  );
+  return session.roomName ?? session.room?.name ?? "Room to be confirmed";
 }
 
 function getSpeakerName(session: PlanningSession): string {
@@ -160,9 +139,7 @@ function getPlanningDays(
   sessions.forEach((session) => {
     const date = safeDate(session.startTime);
 
-    if (!date) {
-      return;
-    }
+    if (!date) return;
 
     const key = dateKey(date);
 
@@ -181,9 +158,7 @@ function getPlanningDays(
   const start = safeDate(event.startDate);
   const end = safeDate(event.endDate);
 
-  if (!start || !end) {
-    return [];
-  }
+  if (!start || !end) return [];
 
   start.setHours(0, 0, 0, 0);
   end.setHours(0, 0, 0, 0);
@@ -226,9 +201,7 @@ function buildPlanningRooms(
   sessions.forEach((session) => {
     const roomId = getRoomId(session);
 
-    if (roomId === null) {
-      return;
-    }
+    if (roomId === null) return;
 
     if (!roomMap.has(roomId)) {
       roomMap.set(roomId, {
@@ -243,16 +216,7 @@ function buildPlanningRooms(
 
 function buildTimelineHours(sessions: PlanningSession[]): string[] {
   if (sessions.length === 0) {
-    return [
-      "09:00",
-      "10:00",
-      "11:00",
-      "12:00",
-      "13:00",
-      "14:00",
-      "15:00",
-      "16:00",
-    ];
+    return ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00"];
   }
 
   const validStartHours = sessions
@@ -264,16 +228,7 @@ function buildTimelineHours(sessions: PlanningSession[]): string[] {
     .filter((hour): hour is number => typeof hour === "number");
 
   if (validStartHours.length === 0 || validEndHours.length === 0) {
-    return [
-      "09:00",
-      "10:00",
-      "11:00",
-      "12:00",
-      "13:00",
-      "14:00",
-      "15:00",
-      "16:00",
-    ];
+    return ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00"];
   }
 
   const minHour = Math.min(...validStartHours);
@@ -299,9 +254,7 @@ function getSessionsForRoomAndHour(
     .filter((session) => {
       const sessionStart = safeDate(session.startTime);
 
-      if (!sessionStart) {
-        return false;
-      }
+      if (!sessionStart) return false;
 
       return getRoomId(session) === roomId && sessionStart.getHours() === hour;
     })
@@ -316,6 +269,16 @@ export default function GlobalPlanningExplorer({
   rooms,
   sessions,
 }: GlobalPlanningExplorerProps) {
+  const [pageReady, setPageReady] = useState(false);
+
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      setPageReady(true);
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
+
   const days = useMemo(
     () => getPlanningDays(event, sessions),
     [event, sessions]
@@ -330,25 +293,19 @@ export default function GlobalPlanningExplorer({
   );
 
   const sessionsOfSelectedDay = useMemo(() => {
-    if (!activeDay) {
-      return sessions;
-    }
+    if (!activeDay) return sessions;
 
     return sessions.filter((session) => dateKey(session.startTime) === activeDay);
   }, [sessions, activeDay]);
 
   const visibleRooms = useMemo(() => {
-    if (selectedRoom === "all") {
-      return planningRooms;
-    }
+    if (selectedRoom === "all") return planningRooms;
 
     return planningRooms.filter((room) => room.id === Number(selectedRoom));
   }, [planningRooms, selectedRoom]);
 
   const filteredSessions = useMemo(() => {
-    if (selectedRoom === "all") {
-      return sessionsOfSelectedDay;
-    }
+    if (selectedRoom === "all") return sessionsOfSelectedDay;
 
     return sessionsOfSelectedDay.filter(
       (session) => getRoomId(session) === Number(selectedRoom)
@@ -371,11 +328,98 @@ export default function GlobalPlanningExplorer({
       : planningRooms.find((room) => room.id === Number(selectedRoom));
 
   return (
-    <main className="min-h-[calc(100vh-76px)] bg-[#06101f] text-white">
+    <main
+      className={`min-h-[calc(100vh-76px)] bg-[#06101f] text-white ${
+        pageReady ? "planning-page-ready" : ""
+      }`}
+    >
+      <style>
+        {`
+          @keyframes planningFadeUp {
+            from {
+              opacity: 0;
+              transform: translateY(28px);
+              filter: blur(8px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+              filter: blur(0);
+            }
+          }
+
+          @keyframes planningScaleIn {
+            from {
+              opacity: 0;
+              transform: scale(0.97);
+              filter: blur(8px);
+            }
+            to {
+              opacity: 1;
+              transform: scale(1);
+              filter: blur(0);
+            }
+          }
+
+          @keyframes sessionPop {
+            from {
+              opacity: 0;
+              transform: translateY(14px) scale(0.97);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0) scale(1);
+            }
+          }
+
+          .planning-reveal {
+            opacity: 0;
+            transform: translateY(28px);
+            filter: blur(8px);
+            transition:
+              opacity 750ms ease,
+              transform 750ms ease,
+              filter 750ms ease;
+          }
+
+          .planning-page-ready .planning-reveal {
+            opacity: 1;
+            transform: translateY(0);
+            filter: blur(0);
+          }
+
+          .planning-scale {
+            opacity: 0;
+            transform: scale(0.97);
+            filter: blur(8px);
+            transition:
+              opacity 850ms ease,
+              transform 850ms ease,
+              filter 850ms ease;
+          }
+
+          .planning-page-ready .planning-scale {
+            opacity: 1;
+            transform: scale(1);
+            filter: blur(0);
+          }
+
+          .planning-delay-100 { transition-delay: 100ms; }
+          .planning-delay-200 { transition-delay: 200ms; }
+          .planning-delay-300 { transition-delay: 300ms; }
+          .planning-delay-400 { transition-delay: 400ms; }
+          .planning-delay-500 { transition-delay: 500ms; }
+
+          .session-pop {
+            animation: sessionPop 520ms ease-out both;
+          }
+        `}
+      </style>
+
       {/* HERO */}
       <section className="relative overflow-hidden border-b border-white/5 bg-[#050817]">
         <div
-          className="absolute inset-y-0 right-0 hidden w-[58%] bg-cover bg-center lg:block"
+          className="absolute inset-y-0 right-0 hidden w-[58%] bg-cover bg-center planning-scale planning-delay-200 lg:block"
           style={{
             backgroundImage:
               "url('/tech-summit-conference-crowd-stage-purple-hero.png')",
@@ -388,21 +432,22 @@ export default function GlobalPlanningExplorer({
           <div className="max-w-[760px]">
             <Link
               href={`/events/${event.id}`}
-              className="mb-5 inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/[0.03] px-4 py-2 text-sm font-semibold text-slate-200 transition hover:border-violet-400/60 hover:bg-white/[0.07] hover:text-white"
+              className="planning-reveal planning-delay-100 mb-5 inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/[0.03] px-4 py-2 text-sm font-semibold text-slate-200 transition hover:border-violet-400/60 hover:bg-white/[0.07] hover:text-white"
             >
               <ArrowLeft size={16} />
               Back to event
             </Link>
-            <div className="mb-5 inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/[0.03] px-3 py-1.5 text-[12px] font-bold uppercase tracking-[0.03em] text-slate-200">
+
+            <div className="planning-reveal planning-delay-200 mb-5 inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/[0.03] px-3 py-1.5 text-[12px] font-bold uppercase tracking-[0.03em] text-slate-200">
               <CalendarDays size={15} />
               Global schedule
             </div>
 
-            <h1 className="text-[42px] font-extrabold leading-none tracking-[-0.04em] text-white md:text-[56px]">
+            <h1 className="planning-reveal planning-delay-300 text-[42px] font-extrabold leading-none tracking-[-0.04em] text-white md:text-[56px]">
               Global schedule
             </h1>
 
-            <p className="mt-4 max-w-[720px] text-[16px] leading-7 text-slate-300">
+            <p className="planning-reveal planning-delay-400 mt-4 max-w-[720px] text-[16px] leading-7 text-slate-300">
               Explore the full program of {event.title}, from{" "}
               {formatEventDateRange(event.startDate, event.endDate)}.
             </p>
@@ -412,7 +457,7 @@ export default function GlobalPlanningExplorer({
 
       {/* FILTERS + TABLE */}
       <section className="event-container py-5">
-        <div className="mb-6 flex flex-col gap-4 xl:flex-row xl:items-center">
+        <div className="planning-reveal planning-delay-200 mb-6 flex flex-col gap-4 xl:flex-row xl:items-center">
           <div className="inline-flex w-fit overflow-hidden rounded-xl border border-white/15 bg-white/[0.03]">
             {days.length === 0 ? (
               <button
@@ -498,8 +543,7 @@ export default function GlobalPlanningExplorer({
           </div>
         </div>
 
-
-        <div className="overflow-x-auto rounded-[22px] border border-white/20 bg-[#081120]/90 shadow-[0_24px_70px_rgba(0,0,0,0.28)]">
+        <div className="planning-scale planning-delay-300 overflow-x-auto rounded-[22px] border border-white/20 bg-[#081120]/90 shadow-[0_24px_70px_rgba(0,0,0,0.28)]">
           <div className="min-w-[1100px]">
             <div
               className="grid border-b border-white/15"
@@ -543,7 +587,7 @@ export default function GlobalPlanningExplorer({
                       className="min-h-[92px] border-r border-dashed border-white/10 px-4 py-3 last:border-r-0"
                     >
                       <div className="space-y-3">
-                        {roomSessions.map((session) => {
+                        {roomSessions.map((session, index) => {
                           const live =
                             session.live ??
                             isSessionLive(session.startTime, session.endTime);
@@ -552,8 +596,9 @@ export default function GlobalPlanningExplorer({
                             <a
                               key={session.id}
                               href={`/sessions/${session.id}`}
+                              style={{ animationDelay: `${index * 80}ms` }}
                               className={[
-                                "block rounded-xl border px-4 py-3 transition hover:-translate-y-0.5",
+                                "session-pop block rounded-xl border px-4 py-3 transition hover:-translate-y-0.5",
                                 live
                                   ? "border-[#ff445c]/60 bg-[linear-gradient(90deg,rgba(255,68,92,0.16),rgba(27,26,57,0.95))] shadow-[0_12px_35px_rgba(255,68,92,0.14)]"
                                   : "border-violet-400/30 bg-[#17152e]/95 hover:border-violet-400/60",
@@ -609,7 +654,7 @@ export default function GlobalPlanningExplorer({
         </div>
 
         {filteredSessions.length === 0 && (
-          <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.03] px-6 py-8 text-center text-slate-300">
+          <div className="planning-reveal planning-delay-400 mt-6 rounded-2xl border border-white/10 bg-white/[0.03] px-6 py-8 text-center text-slate-300">
             No session available for this day and room.
           </div>
         )}
