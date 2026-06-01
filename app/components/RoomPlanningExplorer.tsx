@@ -1,14 +1,16 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
+  Armchair,
+  ArrowLeft,
+  Building2,
   CalendarDays,
   ChevronDown,
   UserRound,
   UsersRound,
-  Armchair,
-  Building2,
 } from "lucide-react";
 
 import type { Event } from "@/app/services/eventService";
@@ -26,8 +28,18 @@ type DayOption = {
   label: string;
 };
 
-function dateKey(dateValue: string | Date): string {
-  const date = typeof dateValue === "string" ? new Date(dateValue) : dateValue;
+function safeDate(dateValue?: string | Date | null): Date | null {
+  if (!dateValue) return null;
+
+  const date =
+    typeof dateValue === "string" ? new Date(dateValue) : dateValue;
+
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function dateKey(dateValue?: string | Date | null): string {
+  const date = safeDate(dateValue);
+  if (!date) return "";
 
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -37,23 +49,17 @@ function dateKey(dateValue: string | Date): string {
 }
 
 function formatDayLabel(date: Date): string {
-  const day = date.toLocaleDateString("en-US", {
-    day: "numeric",
-  });
+  const day = date.toLocaleDateString("en-US", { day: "numeric" });
+  const month = date.toLocaleDateString("en-US", { month: "long" });
 
-  const month = date.toLocaleDateString("en-US", {
-    month: "long",
-  });
-
-  const capitalizedMonth =
-    month.charAt(0).toUpperCase() + month.slice(1);
-
-  return `${day} ${capitalizedMonth}`;
+  return `${day} ${month.charAt(0).toUpperCase()}${month.slice(1)}`;
 }
 
 function getEventDays(startDate: string, endDate: string): DayOption[] {
-  const start = new Date(startDate);
-  const end = new Date(endDate);
+  const start = safeDate(startDate);
+  const end = safeDate(endDate);
+
+  if (!start || !end) return [];
 
   start.setHours(0, 0, 0, 0);
   end.setHours(0, 0, 0, 0);
@@ -61,7 +67,7 @@ function getEventDays(startDate: string, endDate: string): DayOption[] {
   const days: DayOption[] = [];
   const cursor = new Date(start);
 
-  while (cursor <= end) {
+  while (cursor <= end && days.length < 30) {
     days.push({
       key: dateKey(cursor),
       label: formatDayLabel(cursor),
@@ -73,6 +79,34 @@ function getEventDays(startDate: string, endDate: string): DayOption[] {
   return days;
 }
 
+function getSessionDays(sessions: RoomSession[]): DayOption[] {
+  const daysMap = new Map<string, DayOption>();
+
+  sessions.forEach((session) => {
+    const date = safeDate(session.startTime);
+    if (!date) return;
+
+    const key = dateKey(date);
+
+    daysMap.set(key, {
+      key,
+      label: formatDayLabel(date),
+    });
+  });
+
+  return Array.from(daysMap.values()).sort((a, b) =>
+    a.key.localeCompare(b.key)
+  );
+}
+
+function getPlanningDays(event: Event, sessions: RoomSession[]): DayOption[] {
+  const sessionDays = getSessionDays(sessions);
+
+  if (sessionDays.length > 0) return sessionDays;
+
+  return getEventDays(event.startDate, event.endDate);
+}
+
 function getDefaultActiveDay(days: DayOption[]): string {
   const today = dateKey(new Date());
   const currentDay = days.find((day) => day.key === today);
@@ -80,19 +114,32 @@ function getDefaultActiveDay(days: DayOption[]): string {
   return currentDay?.key ?? days[0]?.key ?? "";
 }
 
-function formatHour(dateString: string): string {
-  return new Date(dateString).toLocaleTimeString("en-US", {
+function formatHour(dateString?: string | null): string {
+  const date = safeDate(dateString);
+  if (!date) return "--:--";
+
+  return date.toLocaleTimeString("en-US", {
     hour: "2-digit",
     minute: "2-digit",
   });
 }
 
-function isSessionLive(startTime: string, endTime: string): boolean {
+function isSessionLive(
+  startTime?: string | null,
+  endTime?: string | null
+): boolean {
+  const start = safeDate(startTime);
+  const end = safeDate(endTime);
+
+  if (!start || !end) return false;
+
   const now = new Date();
-  const start = new Date(startTime);
-  const end = new Date(endTime);
 
   return now >= start && now <= end;
+}
+
+function getSpeakerName(session: RoomSession): string {
+  return session.speaker?.name ?? "Speaker to be confirmed";
 }
 
 export default function RoomPlanningExplorer({
@@ -102,10 +149,19 @@ export default function RoomPlanningExplorer({
   sessions,
 }: RoomPlanningExplorerProps) {
   const router = useRouter();
+  const [pageReady, setPageReady] = useState(false);
+
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      setPageReady(true);
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
 
   const days = useMemo(
-    () => getEventDays(event.startDate, event.endDate),
-    [event.startDate, event.endDate]
+    () => getPlanningDays(event, sessions),
+    [event, sessions]
   );
 
   const [activeDay, setActiveDay] = useState<string>(() =>
@@ -114,7 +170,11 @@ export default function RoomPlanningExplorer({
 
   const visibleSessions = useMemo(() => {
     return sessions
-      .filter((session) => dateKey(session.startTime) === activeDay)
+      .filter((session) => {
+        if (!activeDay) return true;
+
+        return dateKey(session.startTime) === activeDay;
+      })
       .sort(
         (a, b) =>
           new Date(a.startTime).getTime() -
@@ -125,11 +185,9 @@ export default function RoomPlanningExplorer({
   const maxCapacity = useMemo(() => {
     const capacities = visibleSessions
       .map((session) => session.capacity)
-      .filter((capacity): capacity is number => capacity !== null);
+      .filter((capacity): capacity is number => typeof capacity === "number");
 
-    if (capacities.length === 0) {
-      return null;
-    }
+    if (capacities.length === 0) return null;
 
     return Math.max(...capacities);
   }, [visibleSessions]);
@@ -139,11 +197,98 @@ export default function RoomPlanningExplorer({
   };
 
   return (
-    <main className="min-h-[calc(100vh-76px)] bg-[#06101f] text-white">
+    <main
+      className={`min-h-[calc(100vh-76px)] bg-[#06101f] text-white ${
+        pageReady ? "room-page-ready" : ""
+      }`}
+    >
+      <style>
+        {`
+          @keyframes roomFadeUp {
+            from {
+              opacity: 0;
+              transform: translateY(28px);
+              filter: blur(8px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+              filter: blur(0);
+            }
+          }
+
+          @keyframes roomScaleIn {
+            from {
+              opacity: 0;
+              transform: scale(0.97);
+              filter: blur(8px);
+            }
+            to {
+              opacity: 1;
+              transform: scale(1);
+              filter: blur(0);
+            }
+          }
+
+          @keyframes roomSessionPop {
+            from {
+              opacity: 0;
+              transform: translateY(14px) scale(0.97);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0) scale(1);
+            }
+          }
+
+          .room-reveal {
+            opacity: 0;
+            transform: translateY(28px);
+            filter: blur(8px);
+            transition:
+              opacity 750ms ease,
+              transform 750ms ease,
+              filter 750ms ease;
+          }
+
+          .room-page-ready .room-reveal {
+            opacity: 1;
+            transform: translateY(0);
+            filter: blur(0);
+          }
+
+          .room-scale {
+            opacity: 0;
+            transform: scale(0.97);
+            filter: blur(8px);
+            transition:
+              opacity 850ms ease,
+              transform 850ms ease,
+              filter 850ms ease;
+          }
+
+          .room-page-ready .room-scale {
+            opacity: 1;
+            transform: scale(1);
+            filter: blur(0);
+          }
+
+          .room-delay-100 { transition-delay: 100ms; }
+          .room-delay-200 { transition-delay: 200ms; }
+          .room-delay-300 { transition-delay: 300ms; }
+          .room-delay-400 { transition-delay: 400ms; }
+          .room-delay-500 { transition-delay: 500ms; }
+
+          .room-session-pop {
+            animation: roomSessionPop 520ms ease-out both;
+          }
+        `}
+      </style>
+
       {/* HERO */}
       <section className="relative overflow-hidden border-b border-white/5 bg-[#050817]">
         <div
-          className="absolute inset-y-0 right-0 hidden w-[58%] bg-cover bg-center lg:block"
+          className="room-scale room-delay-200 absolute inset-y-0 right-0 hidden w-[58%] bg-cover bg-center lg:block"
           style={{
             backgroundImage:
               "url('/tech-summit-conference-crowd-stage-purple-hero.png')",
@@ -154,18 +299,34 @@ export default function RoomPlanningExplorer({
 
         <div className="event-container relative flex min-h-[218px] items-center py-8">
           <div className="max-w-[620px]">
-            <div className="mb-5 inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/[0.03] px-3 py-1.5 text-[12px] font-bold uppercase tracking-[0.03em] text-slate-200">
+            <div className="room-reveal room-delay-100 mb-5 flex flex-wrap gap-3">
+              <Link
+                href={`/events/${event.id}/planning`}
+                className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/[0.03] px-4 py-2 text-sm font-semibold text-slate-200 transition hover:border-violet-400/60 hover:bg-white/[0.07] hover:text-white"
+              >
+                <ArrowLeft size={16} />
+                Back to global schedule
+              </Link>
+
+              <Link
+                href={`/events/${event.id}`}
+                className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.02] px-4 py-2 text-sm font-semibold text-slate-300 transition hover:border-violet-400/50 hover:bg-white/[0.06] hover:text-white"
+              >
+                Back to event
+              </Link>
+            </div>
+
+            <div className="room-reveal room-delay-200 mb-5 inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/[0.03] px-3 py-1.5 text-[12px] font-bold uppercase tracking-[0.03em] text-slate-200">
               <CalendarDays size={15} />
               Room schedule
             </div>
 
-            <h1 className="text-[42px] font-extrabold leading-none tracking-[-0.04em] text-white md:text-[52px]">
+            <h1 className="room-reveal room-delay-300 text-[42px] font-extrabold leading-none tracking-[-0.04em] text-white md:text-[52px]">
               {activeRoom.name}
             </h1>
 
-            <p className="mt-4 max-w-[540px] text-[16px] leading-7 text-slate-300">
-              Explore all sessions scheduled in this room for{" "}
-              {event.title}.
+            <p className="room-reveal room-delay-400 mt-4 max-w-[540px] text-[16px] leading-7 text-slate-300">
+              Explore all sessions scheduled in this room for {event.title}.
             </p>
           </div>
         </div>
@@ -174,31 +335,38 @@ export default function RoomPlanningExplorer({
       {/* CONTENT */}
       <section className="event-container py-5">
         {/* FILTERS */}
-        <div className="mb-6 flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
-          {/* Date filters */}
+        <div className="room-reveal room-delay-200 mb-6 flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
           <div className="inline-flex w-fit overflow-hidden rounded-xl border border-white/15 bg-white/[0.03]">
-            {days.map((day) => {
-              const isActive = day.key === activeDay;
+            {days.length === 0 ? (
+              <button
+                type="button"
+                className="min-w-[128px] bg-gradient-to-r from-[#6d28d9] to-[#7c3aed] px-6 py-3 text-[15px] font-semibold text-white"
+              >
+                No date
+              </button>
+            ) : (
+              days.map((day) => {
+                const isActive = day.key === activeDay;
 
-              return (
-                <button
-                  key={day.key}
-                  type="button"
-                  onClick={() => setActiveDay(day.key)}
-                  className={[
-                    "min-w-[128px] px-6 py-3 text-[15px] font-semibold transition",
-                    isActive
-                      ? "bg-gradient-to-r from-[#6d28d9] to-[#7c3aed] text-white shadow-[0_12px_28px_rgba(124,58,237,0.28)]"
-                      : "border-l border-white/10 text-slate-200 hover:bg-white/[0.06]",
-                  ].join(" ")}
-                >
-                  {day.label}
-                </button>
-              );
-            })}
+                return (
+                  <button
+                    key={day.key}
+                    type="button"
+                    onClick={() => setActiveDay(day.key)}
+                    className={[
+                      "min-w-[128px] px-6 py-3 text-[15px] font-semibold transition",
+                      isActive
+                        ? "bg-gradient-to-r from-[#6d28d9] to-[#7c3aed] text-white shadow-[0_12px_28px_rgba(124,58,237,0.28)]"
+                        : "border-l border-white/10 text-slate-200 hover:bg-white/[0.06]",
+                    ].join(" ")}
+                  >
+                    {day.label}
+                  </button>
+                );
+              })
+            )}
           </div>
 
-          {/* Room select */}
           <div className="relative w-full lg:w-[315px]">
             <Building2
               size={18}
@@ -230,37 +398,37 @@ export default function RoomPlanningExplorer({
 
         {/* MAIN GRID */}
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
-          {/* Sessions */}
-          <div>
+          {/* SESSIONS */}
+          <div className="room-scale room-delay-300">
             {visibleSessions.length === 0 ? (
               <div className="flex min-h-[280px] items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] px-6 text-center text-slate-300">
                 No session is scheduled in this room for this date.
               </div>
             ) : (
               <div className="space-y-2.5">
-                {visibleSessions.map((session) => {
+                {visibleSessions.map((session, index) => {
                   const live = isSessionLive(
                     session.startTime,
                     session.endTime
                   );
 
                   return (
-                    <article
+                    <a
                       key={session.id}
+                      href={`/sessions/${session.id}`}
+                      style={{ animationDelay: `${index * 90}ms` }}
                       className={[
-                        "group flex flex-col gap-4 rounded-2xl border px-4 py-3.5 transition md:flex-row md:items-center md:justify-between",
+                        "room-session-pop group flex flex-col gap-4 rounded-2xl border px-4 py-3.5 transition hover:-translate-y-0.5 md:flex-row md:items-center md:justify-between",
                         live
-                          ? "border-violet-500/70 bg-[linear-gradient(90deg,rgba(88,28,135,0.18),rgba(20,25,47,0.92))] shadow-[0_10px_35px_rgba(124,58,237,0.18)]"
+                          ? "border-[#ff334f]/70 bg-[linear-gradient(90deg,rgba(255,51,79,0.16),rgba(20,25,47,0.92))] shadow-[0_10px_35px_rgba(255,51,79,0.18)]"
                           : "border-white/15 bg-[#0d1526]/85 hover:border-violet-400/45",
                       ].join(" ")}
                     >
                       <div className="flex min-w-0 items-center gap-5">
-                        {/* Time */}
                         <div className="flex h-[62px] w-[102px] shrink-0 items-center justify-center rounded-xl border border-violet-500 bg-[#091120] text-[20px] font-semibold text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.03)]">
                           {formatHour(session.startTime)}
                         </div>
 
-                        {/* Info */}
                         <div className="min-w-0">
                           <h2 className="truncate text-[18px] font-bold tracking-[-0.02em] text-white">
                             {session.title}
@@ -269,8 +437,7 @@ export default function RoomPlanningExplorer({
                           <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-[14px] text-slate-400">
                             <span className="inline-flex items-center gap-2">
                               <UserRound size={16} />
-                              {session.speaker?.name ??
-                                "Speaker to be confirmed"}
+                              {getSpeakerName(session)}
                             </span>
 
                             <span className="hidden h-1 w-1 rounded-full bg-slate-500 sm:inline-block" />
@@ -283,7 +450,6 @@ export default function RoomPlanningExplorer({
                         </div>
                       </div>
 
-                      {/* Status */}
                       <div className="flex shrink-0 items-center justify-end pr-2">
                         {live ? (
                           <span className="inline-flex items-center gap-2 rounded-full bg-[#ff334f] px-4 py-2 text-[13px] font-extrabold uppercase tracking-wide text-white shadow-[0_10px_24px_rgba(255,51,79,0.32)]">
@@ -297,7 +463,7 @@ export default function RoomPlanningExplorer({
                           />
                         )}
                       </div>
-                    </article>
+                    </a>
                   );
                 })}
               </div>
@@ -320,7 +486,7 @@ export default function RoomPlanningExplorer({
           </div>
 
           {/* ROOM CARD */}
-          <aside className="h-fit rounded-2xl border border-violet-400/45 bg-[#0d1526]/88 p-5 shadow-[0_20px_60px_rgba(0,0,0,0.24)]">
+          <aside className="room-scale room-delay-400 h-fit rounded-2xl border border-violet-400/45 bg-[#0d1526]/88 p-5 shadow-[0_20px_60px_rgba(0,0,0,0.24)]">
             <div className="flex items-center gap-4">
               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[linear-gradient(145deg,#33206e,#18153b)] text-fuchsia-300">
                 <Armchair size={28} />
