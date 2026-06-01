@@ -1,15 +1,12 @@
+import { Suspense } from 'react';
 import { EventExplorer } from '../components/EventExplorer';
 import EventFilterBlock from '../components/EventFilterBlock';
 import { eventService } from '../services/eventService';
+import { ExplorerSkeleton } from '../components/ui/ExplorerSkeleton';
 
 export default async function EventsPage({ searchParams }: { searchParams: Promise<{ page?: string; q?: string; date?: string; location?: string }> }) {
   const params = await searchParams;
-  const currentPage = params.page ? parseInt(params.page) : 1;
   const searchQuery = params.q || '';
-  const dateFilter = params.date || 'all';
-  const locationFilter = params.location || '';
-
-  const events = await eventService.getAllEvents(currentPage, 8, searchQuery, dateFilter, locationFilter);
 
   return (
     <main className="h-auto lg:h-[calc(100vh-76px)] flex flex-col">
@@ -27,7 +24,21 @@ export default async function EventsPage({ searchParams }: { searchParams: Promi
 
       <EventFilterBlock initialSearch={searchQuery} />
 
-      <EventExplorer data={events} currentPage={currentPage} />
+      <Suspense fallback={<ExplorerSkeleton />}>
+        <EventExplorerWrapper searchParams={searchParams} />
+      </Suspense>
     </main>
   );
+}
+
+async function EventExplorerWrapper({ searchParams }: { searchParams: Promise<{ page?: string; q?: string; date?: string; location?: string }> }) {
+  
+  const params = await searchParams;
+  const currentPage = params.page ? parseInt(params.page) : 1;
+  const searchQuery = params.q || '';
+  const dateFilter = params.date || 'all';
+  const locationFilter = params.location || '';
+
+  const events = await eventService.getAllEvents(currentPage, 8, searchQuery, dateFilter, locationFilter);
+  return <EventExplorer data={events} currentPage={currentPage} />;
 }
