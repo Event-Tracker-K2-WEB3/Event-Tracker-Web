@@ -28,7 +28,7 @@ export const EventSessions = ({ sessions, eventId }: EventSessionsProps) => {
             </div>
 
             <div className="rounded-xl border border-white/15 bg-[#0b1020]/72 p-3 sm:p-4 shadow-[0_18px_45px_rgba(0,0,0,0.22)] backdrop-blur-xl">
-                <div className="space-y-3">
+                <div className="space-y-3 max-h-[340px] overflow-y-auto pr-1 [scrollbar-width:thin] [scrollbar-color:rgba(124,58,237,0.4)_transparent]">
                     {sessions.map((session) => (
                         <EventSessionCard key={session.id} session={session} />
                     ))}

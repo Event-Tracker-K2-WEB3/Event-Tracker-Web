@@ -35,13 +35,14 @@ function isEventLive(startDateStr: string, endDateStr: string): boolean {
   return now >= start && now <= end;
 }
 
-export function EventCard({ event }: { event: Event }) {
+export function EventCard({ event, index = 0 }: { event: Event; index?: number }) {
   const isLive = isEventLive(event.startDate, event.endDate);
 
   return (
     <Link
       href={`/events/${event.id}`}
-      className="event-glass group overflow-hidden rounded-xl border border-event-border transition hover:-translate-y-0.5 hover:border-event-primary/50"
+      style={{ animationDelay: `${index * 90}ms` }}
+      className="animate-fade-up event-glass group overflow-hidden rounded-xl border border-event-border transition hover:-translate-y-0.5 hover:border-event-primary/50"
     >
 
       <div className="relative h-24 bg-gradient-to-br from-event-primary/30 via-event-primary/10 to-event-secondary/20">
