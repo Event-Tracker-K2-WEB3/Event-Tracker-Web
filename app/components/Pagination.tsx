@@ -58,7 +58,7 @@ const Pagination = ({ currentPage, totalPages, isFirstPage, isLastPage }: Pagina
   };
 
   return (
-    <div className="dark event-glass border-2 border-red-600 flex items-center gap-1 p-1 rounded-lg w-fit">
+    <div className="animate-fade-up animation-delay-400 dark event-glass flex items-center gap-1 p-1 rounded-lg w-fit">
       
       <button
         onClick={() => handlePageChange(currentPage - 1)}
