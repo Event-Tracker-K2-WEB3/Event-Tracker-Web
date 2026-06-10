@@ -62,7 +62,7 @@ const Pagination = ({ currentPage, totalPages, isFirstPage, isLastPage }: Pagina
       
       <button
         onClick={() => handlePageChange(currentPage - 1)}
-        disabled={isFirstPage}
+        disabled={isFirstPage || undefined}
         className={`w-8 h-8 flex items-center justify-center rounded transition-colors ${isFirstPage
           ? "text-gray-600 cursor-not-allowed"
           : "text-gray-300 hover:bg-gray-800"
@@ -89,7 +89,7 @@ const Pagination = ({ currentPage, totalPages, isFirstPage, isLastPage }: Pagina
 
       <button
         onClick={() => handlePageChange(currentPage + 1)}
-        disabled={isLastPage}
+        disabled={isLastPage || undefined}
         className={`w-8 h-8 flex items-center justify-center rounded transition-colors ${isLastPage
           ? "text-gray-600 cursor-not-allowed"
           : "text-gray-300 hover:bg-gray-800"
