@@ -935,6 +935,13 @@ export default function Page() {
             <p className="text-sm text-white/25">
               © 2026 EventSync. All rights reserved.
             </p>
+
+            <a
+              href={process.env.NEXT_PUBLIC_ADMIN_LOGIN_URL || "http://localhost:5173/#/login"}
+              className="inline-flex items-center rounded-xl border border-violet-500/40 px-4 py-2 text-sm font-semibold text-violet-300 transition hover:border-violet-400 hover:bg-violet-500/10 hover:text-white"
+            >
+              Intranet
+            </a>
           </div>
         </div>
       </footer>
