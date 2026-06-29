@@ -33,19 +33,32 @@ export default async function Page({ params }: { params: Promise<{ eventId: stri
     <main className="dark min-h-[calc(100vh-76px)] bg-event-bg">
       <div className="event-container px-12">
 
-        <BackButton />
+        <div className="animate-fade-in animation-delay-100">
+          <BackButton />
+        </div>
 
-        <EventHeroSection
-          title={event.title}
-          isLive={isLive}
-          startDate={event.startDate}
-          endDate={event.endDate}
-          location={event.location}
-        />
+        <div className="animate-scale-in animation-delay-200">
+          <EventHeroSection
+            title={event.title}
+            isLive={isLive}
+            startDate={event.startDate}
+            endDate={event.endDate}
+            location={event.location}
+          />
+        </div>
 
-        <EventAboutSection about={event.description} />
-        <EventSpeakers speakers={speakers} />
-        <EventSessions sessions={sessions} eventId={eventId} />
+        <div className="animate-fade-up animation-delay-300">
+          <EventAboutSection about={event.description} />
+        </div>
+
+        <div className="animate-fade-up animation-delay-400">
+          <EventSpeakers speakers={speakers} />
+        </div>
+
+        <div className="animate-fade-up animation-delay-400">
+          <EventSessions sessions={sessions} eventId={eventId} />
+        </div>
+
       </div>
     </main>
   );

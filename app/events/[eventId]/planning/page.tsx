@@ -1,9 +1,11 @@
 import { notFound } from "next/navigation";
 
-import GlobalPlanningExplorer from "@/app/components/GlobalPlanningExplorer";
-import { eventService } from "@/app/services/eventService";
+import GlobalPlanningExplorer, {
+  type PlanningSession,
+} from "@/app/components/GlobalPlanningExplorer";
+import { eventService, type EventSession } from "@/app/services/eventService";
 import { getRooms } from "@/app/services/roomService";
-import { getSessionsByEvent } from "@/app/services/sessionService";
+import { getSessionById } from "@/app/services/sessionService";
 
 interface Props {
   params: Promise<{
@@ -11,15 +13,37 @@ interface Props {
   }>;
 }
 
+async function enrichSession(session: EventSession): Promise<PlanningSession> {
+  try {
+    const details = await getSessionById(String(session.id));
+
+    return {
+      ...session,
+      speakerName:
+        details.speakers?.map((speaker) => speaker.name).join(", ") ||
+        "Speaker to be confirmed",
+      live: details.live,
+    };
+  } catch {
+    return {
+      ...session,
+      speakerName: "Speaker to be confirmed",
+      live: false,
+    };
+  }
+}
+
 export default async function PlanningPage({ params }: Props) {
   const { eventId } = await params;
 
   try {
-    const [event, rooms, sessions] = await Promise.all([
+    const [event, rooms, eventSessions] = await Promise.all([
       eventService.getEventById(eventId),
       getRooms(),
-      getSessionsByEvent(eventId),
+      eventService.getSessionsByEventId(eventId),
     ]);
+
+    const sessions = await Promise.all(eventSessions.map(enrichSession));
 
     return (
       <GlobalPlanningExplorer

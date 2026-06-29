@@ -2,7 +2,7 @@
 
 import { Label } from "./ui/label"
 import { RadioGroup, RadioGroupItem } from "../components/ui/radio-group"
-import { useRouter, useSearchParams } from "next/dist/client/components/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const DATE_OPTIONS = [
     { id: "all", label: "All" },
@@ -23,7 +23,7 @@ export const DateFilters: React.FC = () => {
         } else {
             params.delete('date');
         }
-        params.delete('page'); // Reset page 1
+        params.delete('page');
         router.push(`?${params.toString()}`);
     };
 
@@ -33,8 +33,11 @@ export const DateFilters: React.FC = () => {
             onValueChange={handleDateChange}
             className="flex flex-col gap-4"
         >
-            {DATE_OPTIONS.map((option) => (
-                <div key={option.id} className="flex items-center space-x-3 group">
+            {DATE_OPTIONS.map((option, index) => (
+                <div 
+                    key={option.id} 
+                    className={`flex items-center space-x-3 group animate-fade-up animation-delay-${600 + index * 50}`}
+                >
                     <RadioGroupItem
                         value={option.id}
                         id={`date-${option.id}`}

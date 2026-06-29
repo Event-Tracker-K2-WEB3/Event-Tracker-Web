@@ -49,16 +49,18 @@ const LocationSearch = () => {
     };
 
     return (
-        <InputGroup className="dark bg-background max-w-md rounded-md overflow-hidden border-border focus-within:border-event-primary focus-within:ring-1 focus-within:ring-event-primary/50 transition-all">
-            <InputGroupInput 
-                placeholder="Search for a city..."
-                value={value}
-                onChange={handleChange}
-            />
-            <InputGroupAddon>
-                <Search />
-            </InputGroupAddon>
-        </InputGroup>
+        <div className="animate-fade-up animation-delay-600">
+            <InputGroup className="dark bg-background max-w-md rounded-md overflow-hidden border-border focus-within:border-event-primary focus-within:ring-1 focus-within:ring-event-primary/50 transition-all">
+                <InputGroupInput 
+                    placeholder="Search for a city..."
+                    value={value}
+                    onChange={handleChange}
+                />
+                <InputGroupAddon>
+                    <Search />
+                </InputGroupAddon>
+            </InputGroup>
+        </div>
     );
 };
 

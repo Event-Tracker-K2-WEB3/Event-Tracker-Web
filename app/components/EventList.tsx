@@ -20,8 +20,8 @@ const EventList = ({ events }: { events: Event[] }) => {
   return (
     <>
       <div className="h-full w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {events.map((event) => (
-          <EventCard key={event.id} event={event} />
+        {events.map((event, index) => (
+          <EventCard key={event.id} event={event} index={index}/>
         ))}
         {Array(invisibleCardsNeeded).fill(null).map((_, index) => (
           <div key={`invisible-${index}`} className="invisible">

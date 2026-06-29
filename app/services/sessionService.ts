@@ -28,6 +28,77 @@ export type SessionDetails = {
   speakers: SessionSpeaker[];
 };
 
+export type SessionEvent = {
+  id: string;
+  title: string;
+  description: string;
+  startDate: string;
+  endDate: string;
+  location: string;
+};
+
+export type SessionRoom = {
+  id: number;
+  name: string;
+};
+
+export interface Session {
+  id: number;
+  title: string;
+  description: string;
+  startTime: string;
+  endTime: string;
+  type: string;
+  capacity: number | null;
+
+  event?: SessionEvent;
+  eventId?: string;
+  eventTitle?: string;
+
+  room?: SessionRoom | null;
+  roomId?: number;
+  roomName?: string;
+
+  speaker?: SessionSpeaker | null;
+  speakers?: SessionSpeaker[];
+}
+
+export async function getSessionsByRoom(roomId: number): Promise<Session[]> {
+  const response = await fetch(`${API_BASE_URL}/sessions/room/${roomId}`, {
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error(`Erreur récupération des sessions de la salle : ${response.status}`);
+  }
+
+  return response.json();
+}
+
+export async function getAllSessions(): Promise<Session[]> {
+  const res = await fetch(`${API_BASE_URL}/sessions`, {
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    throw new Error(`Erreur récupération des sessions : ${res.status}`);
+  }
+
+  return res.json();
+}
+
+export async function getSessionsByEvent(eventId: string): Promise<Session[]> {
+  const response = await fetch(`${API_BASE_URL}/events/${eventId}/sessions`, {
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error(`Erreur récupération des sessions : ${response.status}`);
+  }
+
+  return response.json();
+}
+
 export async function getSessionById(id: string): Promise<SessionDetails> {
   const response = await fetch(`${API_BASE_URL}/sessions/${id}`, {
     cache: "no-store",
