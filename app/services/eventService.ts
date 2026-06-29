@@ -7,6 +7,7 @@ export interface Event {
   startDate: string;
   endDate: string;
   location: string;
+  imageUrl?: string | null;
 }
 
 export interface PaginatedResponse {

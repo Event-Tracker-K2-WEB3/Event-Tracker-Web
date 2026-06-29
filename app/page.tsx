@@ -423,9 +423,8 @@ export default function Page() {
 
   return (
     <main
-      className={`home-page min-h-[calc(100vh-76px)] ${
-        pageReady ? "home-page-ready" : ""
-      }`}
+      className={`home-page min-h-[calc(100vh-76px)] ${pageReady ? "home-page-ready" : ""
+        }`}
     >
       <style>
         {`
@@ -640,11 +639,10 @@ export default function Page() {
                 >
                   <div className="mb-4 flex items-center gap-2 text-[12px] font-bold uppercase tracking-[0.06em] text-slate-200">
                     <span
-                      className={`h-2 w-2 rounded-full ${
-                        activeHeroSession.live
+                      className={`h-2 w-2 rounded-full ${activeHeroSession.live
                           ? "bg-[#ff4d6d]"
                           : "bg-[#a855f7]"
-                      }`}
+                        }`}
                     />
                     {activeHeroSession.live ? "Happening now" : "Coming soon"}
                   </div>
@@ -771,13 +769,14 @@ export default function Page() {
                   >
                     <a href={`/events/${event.id}`}>
                       <div
-                        className="relative h-[122px] overflow-hidden"
+                        className="relative h-24 overflow-hidden bg-gradient-to-br from-event-primary/30 via-event-primary/10 to-event-secondary/20"
                         style={{
-                          backgroundImage: "url('/home-ger.png')",
+                          backgroundImage: event.imageUrl ? `url(${event.imageUrl})` : undefined,
                           backgroundSize: "cover",
                           backgroundPosition: "center",
                         }}
                       >
+                        <div className="absolute inset-0 bg-black/20" />
                         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(0,0,0,0.24))]" />
 
                         <div className="absolute left-4 top-4 flex h-[58px] w-[56px] flex-col items-center justify-center rounded-[10px] border border-[#b15cff] bg-[#11152d]/80 shadow-[0_10px_25px_rgba(0,0,0,0.38)] backdrop-blur-md">

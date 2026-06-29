@@ -45,7 +45,15 @@ export function EventCard({ event, index = 0 }: { event: Event; index?: number }
       className="animate-fade-up event-glass group overflow-hidden rounded-xl border border-event-border transition hover:-translate-y-0.5 hover:border-event-primary/50"
     >
 
-      <div className="relative h-24 bg-gradient-to-br from-event-primary/30 via-event-primary/10 to-event-secondary/20">
+      <div
+        className="relative h-24 overflow-hidden bg-gradient-to-br from-event-primary/30 via-event-primary/10 to-event-secondary/20"
+        style={{
+          backgroundImage: event.imageUrl ? `url(${event.imageUrl})` : undefined,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        <div className="absolute inset-0 bg-black/20" />
 
         <div className="absolute left-3 top-3 rounded-lg border border-event-accent/60 bg-event-bg/60 px-2 py-1.5 text-center backdrop-blur-md">
           <p className="text-lg font-black leading-none text-event-text">
@@ -68,7 +76,7 @@ export function EventCard({ event, index = 0 }: { event: Event; index?: number }
       </div>
 
       <div className="p-3 space-y-1.5">
-        
+
         <h3 className="text-sm font-bold text-event-text group-hover:text-event-primary transition-colors line-clamp-1">
           {event.title}
         </h3>
